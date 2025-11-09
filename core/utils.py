@@ -1,6 +1,6 @@
 
 
-def get_upcoming_fights():
+def get_upcoming_matches():
     # Здесь можно подключить requests + BeautifulSoup
     # Для демо вернем моковые данные
     return [

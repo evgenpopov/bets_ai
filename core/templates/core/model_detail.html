@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ model.name }} - Bets</title>
+  <style>
+    /* 🌟 Стиль, похожий на nof1.ai */
+    body {
+      background-color: #f9f9f9;
+      color: #222;
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 0.2em;
+    }
+
+    .balance {
+      font-size: 1.3rem;
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f1f3f5;
+      font-weight: 600;
+      color: #555;
+    }
+
+    tr:nth-child(even) {
+      background-color: #fafafa;
+    }
+
+    tr:hover {
+      background-color: #e9f2ff;
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .no-data {
+      text-align: center;
+      color: #888;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>{{ model.name }}</h1>
+    <div class="balance">Balance: ${{ model.balance|floatformat:2 }}</div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Match</th>
+          <th>Predicted Winner</th>
+          <th>Bet Amount ($)</th>
+          <th>Odds</th>
+          <th>Result ($)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in predictions %}
+        <tr>
+          <td>{{ p.match.date|date:"Y-m-d" }}</td>
+          <td>{{ p.match.participant_1 }} vs {{ p.match.participant_2 }}</td>
+          <td>{{ p.predicted_winner }}</td>
+          <td>{{ p.bet_amount|floatformat:2 }}</td>
+          <td>{{ p.odds|floatformat:2 }}</td>
+          <td>
+            {% if p.result is not None %}
+              {{ p.result|floatformat:2 }}
+            {% else %}
+              -
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="no-data">No predictions yet</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

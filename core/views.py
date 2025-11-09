@@ -1,13 +1,13 @@
-from django.shortcuts import render, redirect
-from .models import Fight, ModelAI, Prediction, BalanceHistory
-from .utils import get_upcoming_fights
-from .ai_models import ChatGPTModel, DeepSeekModel, GeminiModel
+from django.shortcuts import render, redirect, get_object_or_404
+
+from .models import ModelAI, Match, Prediction, BalanceHistory
+from .utils import get_upcoming_matches
 
 
 def index(request):
     models = ModelAI.objects.all()
-    fights = Fight.objects.all()
-    predictions = Prediction.objects.select_related("ai_model", "fight").all()
+    matches = Match.objects.all()
+    predictions = Prediction.objects.select_related("ai_model", "match").all()
     balance_history = BalanceHistory.objects.select_related("ai_model").order_by("-date")
 
     history = BalanceHistory.objects.order_by("date")
@@ -20,32 +20,18 @@ def index(request):
 
     return render(request, "core/index.html", {
         "models": models,
-        "fights": fights,
+        "matches": matches,
         "predictions": predictions,
+        "balance_history": balance_history,
         "history_data": data,
-        "balance_history": balance_history
     })
 
 
-def run_predictions(request):
-    if request.method == "POST":
-        fights = get_upcoming_fights()
-        ai_models = [ChatGPTModel(), DeepSeekModel(), GeminiModel()]
+def model_detail(request, model_id):
+    model = get_object_or_404(ModelAI, id=model_id)
+    predictions = model.predictions.select_related('match').order_by('-match__date')
 
-        for f in fights:
-            fight, _ = Fight.objects.get_or_create(
-                fighter1=f["fighter1"],
-                fighter2=f["fighter2"],
-                date=f["date"]
-            )
-            for model in ai_models:
-                model_ai, _ = ModelAI.objects.get_or_create(name=model.name)
-                pred, created = Prediction.objects.get_or_create(
-                    ai_model=model_ai,
-                    fight=fight,
-                    predicted_winner=model.predict(f)
-                )
-                if created:
-                    pred.evaluate()
-        return redirect("index")
-    return redirect("index")
+    return render(request, 'core/model_detail.html', {
+        'model': model,
+        'predictions': predictions,
+    })

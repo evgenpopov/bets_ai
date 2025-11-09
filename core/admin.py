@@ -1,28 +1,34 @@
 from django.contrib import admin
-from .models import Fight, ModelAI, Prediction, BalanceHistory
+from .models import ModelAI, Match, Prediction, BalanceHistory
 
 
-@admin.register(Fight)
-class FightAdmin(admin.ModelAdmin):
-    list_display = ('fighter1', 'fighter2', 'winner', 'date')
-    search_fields = ('fighter1', 'fighter2')
-    list_filter = ('date',)
+@admin.register(Match)
+class MatchAdmin(admin.ModelAdmin):
+    list_display = ('participant_1', 'participant_2', 'winner', 'type', 'date')
+    search_fields = ('participant_1', 'participant_2')
+    list_filter = ('type', 'date')
+    ordering = ('-date',)
 
 
 @admin.register(ModelAI)
 class ModelAIAdmin(admin.ModelAdmin):
     list_display = ('name', 'balance')
     search_fields = ('name',)
-
-
-@admin.register(BalanceHistory)
-class BalanceHistoryAdmin(admin.ModelAdmin):
-    list_display = ('ai_model', 'date', 'balance')
+    ordering = ('name',)
 
 
 @admin.register(Prediction)
 class PredictionAdmin(admin.ModelAdmin):
-    list_display = ('ai_model', 'fight', 'predicted_winner', 'bet_amount', 'result')
-    list_filter = ('ai_model',)
-    search_fields = ('fight__fighter1', 'fight__fighter2', 'ai_model__name')
-    autocomplete_fields = ('ai_model', 'fight')
+    list_display = ('ai_model', 'match', 'predicted_winner', 'bet_amount', 'odds', 'result')
+    list_filter = ('ai_model', 'match__date')
+    search_fields = ('ai_model__name', 'match__participant_1', 'match__participant_2')
+    autocomplete_fields = ('ai_model', 'match')
+    ordering = ('-match__date',)
+
+
+@admin.register(BalanceHistory)
+class BalanceHistoryAdmin(admin.ModelAdmin):
+    list_display = ('ai_model', 'date', 'balance',)
+    search_fields = ('ai_model__name',)
+    list_filter = ('ai_model', 'date')
+    ordering = ('-date',)
