@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Bets AI Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<h1>Bets AI Dashboard</h1>
+{% comment %}
+<form method="post" action="{% url 'run_predictions' %}">
+  {% csrf_token %}
+  <button type="submit">Parse</button>
+</form>
+{% endcomment %}
+
+<hr>
+<canvas id="lineChart" width="800" height="350"></canvas>
+
+<hr>
+<h3>📊 BALANCE</h3>
+<table border="1" cellpadding="5">
+  <tr><th>Модель</th><th>Баланс ($)</th></tr>
+  {% for m in models %}
+  <tr><td>{{ m.name }}</td><td>{{ m.balance|floatformat:2 }}</td></tr>
+  {% endfor %}
+</table>
+
+<script>
+const historyData = {{ history_data|safe }};
+const labels = [...new Set(Object.values(historyData).flat().map(h => h.date))].sort();
+const datasets = Object.entries(historyData).map(([model, entries], idx) => {
+  const color = ['#36A2EB','#FF6384','#FFCE56','#4BC0C0','#9966FF'][idx % 5];
+  const data = labels.map(date => {
+    const entry = entries.find(e => e.date === date);
+    return entry ? entry.balance : null;
+  });
+  return { label: model, data, borderColor: color, fill: false, tension: 0.3 };
+});
+
+new Chart(document.getElementById('lineChart'), {
+  type: 'line',
+  data: { labels, datasets },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'top' },
+      title: { display: true, text: 'TOTAL ACCOUNT VALUE' }
+    },
+    scales: { y: { beginAtZero: true } }
+  }
+});
+</script>
+
+<hr>
+<h3>📜 History</h3>
+<table border="1" cellpadding="5">
+  <tr>
+    <th>Date / Time</th>
+    <th>Model</th>
+    <th>Fight</th>
+    <th>($)</th>
+  </tr>
+  {% for h in balance_history %}
+  <tr>
+    <td>{{ h.date|date:"Y-m-d H:i" }}</td>
+    <td>{{ h.ai_model.name }}</td>
+    <td>{% if h.prediction %}{{ h.prediction.fight.fighter1 }} vs {{ h.prediction.fight.fighter2 }}{% else %}-{% endif %}</td>
+    <td>{{ h.balance|floatformat:2 }}</td>
+  </tr>
+  {% endfor %}
+</table>
