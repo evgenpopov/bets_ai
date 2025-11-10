@@ -1,15 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .models import ModelAI, Match, Prediction, BalanceHistory
-from .utils import get_upcoming_matches
 
 
 def index(request):
     models = ModelAI.objects.all()
     matches = Match.objects.all()
-    predictions = Prediction.objects.select_related("ai_model", "match").all()
+    predictions = Prediction.objects.select_related("ai_model", "match").all()[:10]
     balance_history = BalanceHistory.objects.select_related("ai_model").order_by("-date")
-
+    from .utils import create_matches_obj
+    create_matches_obj()
     history = BalanceHistory.objects.order_by("date")
     data = {}
     for h in history:

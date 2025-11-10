@@ -21,10 +21,13 @@ class Match(models.Model):
 
     participant_1 = models.CharField(max_length=100)
     participant_2 = models.CharField(max_length=100)
-    score_1 = models.FloatField(blank=True, null=True)
-    score_2 = models.FloatField(blank=True, null=True)
+    metadata_participant_1 = models.JSONField(blank=True, null=True)
+    metadata_participant_2 = models.JSONField(blank=True, null=True)
+    score_1 = models.IntegerField(blank=True, null=True)
+    score_2 = models.IntegerField(blank=True, null=True)
 
     metadata = models.JSONField(blank=True, null=True)
+    rapidapi_id = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
         return f"({self.date}) {self.participant_1} vs {self.participant_2}"
