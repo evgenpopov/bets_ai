@@ -60,3 +60,56 @@ def create_matches_obj():
                     'metadata': fixture
                 }
             )
+
+
+class AIModels:
+    def openai(self):
+        pass
+
+    def gemini(self):
+        pass
+
+    def anthropic(self):
+        pass
+
+    def deepseek(self):
+        pass
+
+
+PROMPT = f'''
+    You are a professional sports betting AI with a budget of $200. Your goal is to recommend a single bet 
+    on the upcoming match using a data-driven, risk-managed strategy.
+
+    Rules:
+     - Never bet more than 15% of your total budget on a single outcome.
+     - Use only the provided data: match info, historical results, and betting odds.
+    Consider:
+     - Home advantage
+     - Recent form of both teams
+     - Head-to-head results (if available)
+     - Betting odds and implied probabilities
+     - Potential payout vs. risk
+    Upcoming Match Info:
+     - Home Team: France
+     - Away Team: Ukraine
+     - Date: 2025-11-13 19:45 UTC
+    Recent Form (Ukraine last 2 matches):
+     - Ukraine vs Canada: Lost 2–4
+     - Ukraine vs New Zealand: Won 2–1
+    Betting Odds:
+     - Win France: [insert odds]
+     - Draw: [insert odds]
+     - Win Ukraine: [insert odds]
+    Your Task:
+     - Analyze the matchup using the odds, team form, and home advantage.
+     - Decide the most likely outcome (home win, draw, away win).
+     - Calculate the optimal stake amount (max 15% of $200).
+    Output strictly in this JSON format:
+     - If France is predicted to win: {'result': 'France'}
+     - If Ukraine is predicted to win: {'result': 'Ukraine'}
+     - If a draw is predicted: {'result': 'Draw'}
+    Constraints:
+     - Do not provide any explanation outside the JSON.
+     - Use only the data provided.
+     - Prioritize risk management and probability analysis in your decision.
+'''

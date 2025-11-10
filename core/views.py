@@ -8,8 +8,7 @@ def index(request):
     matches = Match.objects.all()
     predictions = Prediction.objects.select_related("ai_model", "match").all()[:10]
     balance_history = BalanceHistory.objects.select_related("ai_model").order_by("-date")
-    from .utils import create_matches_obj
-    create_matches_obj()
+
     history = BalanceHistory.objects.order_by("date")
     data = {}
     for h in history:
