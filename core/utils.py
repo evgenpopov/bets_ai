@@ -77,7 +77,7 @@ class AIModels:
 
 
 PROMPT = f'''
-    You are a professional sports betting AI with a budget of $200. Your goal is to recommend a single bet 
+    You are a professional sports betting AI with a budget of ${0}. Your goal is to recommend a single bet 
     on the upcoming match using a data-driven, risk-managed strategy.
 
     Rules:
@@ -90,26 +90,30 @@ PROMPT = f'''
      - Betting odds and implied probabilities
      - Potential payout vs. risk
     Upcoming Match Info:
-     - Home Team: France
-     - Away Team: Ukraine
-     - Date: 2025-11-13 19:45 UTC
-    Recent Form (Ukraine last 2 matches):
-     - Ukraine vs Canada: Lost 2–4
-     - Ukraine vs New Zealand: Won 2–1
+     - Home Team: {1}
+     - Away Team: {2}
+     - Date: {3}
+    Recent Form ({1} last matches):
+     - {4} Ukraine vs Canada: Lost 2–4
+     - {5} Ukraine vs New Zealand: Won 2–1
+    Recent Form ({2} last matches):
+     - {6} Ukraine vs Canada: Lost 2–4
+     - {7} Ukraine vs New Zealand: Won 2–1
     Betting Odds:
-     - Win France: [insert odds]
-     - Draw: [insert odds]
-     - Win Ukraine: [insert odds]
+     - Win {1}: {8}
+     - Draw: {9}
+     - Win {2}: {10}
     Your Task:
      - Analyze the matchup using the odds, team form, and home advantage.
      - Decide the most likely outcome (home win, draw, away win).
-     - Calculate the optimal stake amount (max 15% of $200).
+     - Calculate the optimal stake amount (max 15% of ${0}).
     Output strictly in this JSON format:
-     - If France is predicted to win: {'result': 'France'}
-     - If Ukraine is predicted to win: {'result': 'Ukraine'}
-     - If a draw is predicted: {'result': 'Draw'}
+        {
+          "result": "{1}",  // or "{2}" or "Draw"
+          "stake": 30          // numeric value in dollars
+        }
     Constraints:
-     - Do not provide any explanation outside the JSON.
-     - Use only the data provided.
+     - Only return JSON, no additional explanation.
+     - Use probability analysis and risk management to determine both outcome and stake.
      - Prioritize risk management and probability analysis in your decision.
 '''
