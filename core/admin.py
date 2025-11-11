@@ -4,8 +4,8 @@ from .models import ModelAI, Match, Prediction, BalanceHistory
 
 @admin.register(Match)
 class MatchAdmin(admin.ModelAdmin):
-    list_display = ('participant_1', 'participant_2', 'winner', 'type', 'date')
-    search_fields = ('participant_1', 'participant_2')
+    list_display = ('home', 'away', 'winner', 'type', 'date')
+    search_fields = ('home', 'away')
     list_filter = ('type', 'date')
     ordering = ('-date',)
 
@@ -21,7 +21,7 @@ class ModelAIAdmin(admin.ModelAdmin):
 class PredictionAdmin(admin.ModelAdmin):
     list_display = ('ai_model', 'match', 'predicted_winner', 'bet_amount', 'odds', 'result')
     list_filter = ('ai_model', 'match__date')
-    search_fields = ('ai_model__name', 'match__participant_1', 'match__participant_2')
+    search_fields = ('ai_model__name', 'match__home', 'match__away')
     autocomplete_fields = ('ai_model', 'match')
     ordering = ('-match__date',)
 

@@ -93,7 +93,7 @@
         {% for p in predictions %}
         <tr>
           <td>{{ p.match.date|date:"Y-m-d" }}</td>
-          <td>{{ p.match.participant_1 }} vs {{ p.match.participant_2 }}</td>
+          <td>{{ p.match.home }} vs {{ p.match.away }}</td>
           <td>{{ p.predicted_winner }}</td>
           <td>{{ p.bet_amount|floatformat:0 }}$</td>
           <td>{{ p.odds|floatformat:2 }}</td>

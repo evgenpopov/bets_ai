@@ -19,25 +19,25 @@ class Match(models.Model):
     date = models.DateField()
     winner = models.CharField(max_length=100, blank=True, null=True)
 
-    participant_1 = models.CharField(max_length=100)
-    participant_2 = models.CharField(max_length=100)
-    metadata_participant_1 = models.JSONField(blank=True, null=True)
-    metadata_participant_2 = models.JSONField(blank=True, null=True)
-    score_1 = models.IntegerField(blank=True, null=True)
-    score_2 = models.IntegerField(blank=True, null=True)
+    home = models.CharField(max_length=100)
+    away = models.CharField(max_length=100)
+    metadata_home = models.JSONField(blank=True, null=True)
+    metadata_away = models.JSONField(blank=True, null=True)
+    score_home = models.IntegerField(blank=True, null=True)
+    score_away = models.IntegerField(blank=True, null=True)
 
     metadata = models.JSONField(blank=True, null=True)
     rapidapi_id = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
-        return f"({self.date}) {self.participant_1} vs {self.participant_2}"
+        return f"[{self.date}] {self.home} vs {self.away}"
 
     def auto_set_winner(self):
-        if self.score_1 is not None and self.score_2 is not None:
-            if self.score_1 > self.score_2:
-                self.winner = self.participant_1
-            elif self.score_2 > self.score_1:
-                self.winner = self.participant_2
+        if self.home is not None and self.away is not None:
+            if self.home > self.away:
+                self.winner = self.home
+            elif self.away > self.home:
+                self.winner = self.away
             else:
                 self.winner = "Draw"
 

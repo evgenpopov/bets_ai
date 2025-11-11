@@ -42,22 +42,22 @@ def create_matches_obj():
 
     for fixture in matches:
         if fixture['league']['id'] in LEAGUES_LIST_ID:
-            metadata_participant_1 = get_team_stats(tomorrow.year, fixture['teams']['home']['id'])
-            if not metadata_participant_1:
-                metadata_participant_1 = get_team_stats(tomorrow.year - 1, fixture['teams']['home']['id'])
-            metadata_participant_2 = get_team_stats(tomorrow.year, fixture['teams']['away']['id'])
-            if not metadata_participant_2:
-                metadata_participant_2 = get_team_stats(tomorrow.year - 1, fixture['teams']['away']['id'])
+            metadata_home = get_team_stats(tomorrow.year, fixture['teams']['home']['id'])
+            if not metadata_home:
+                metadata_home = get_team_stats(tomorrow.year - 1, fixture['teams']['home']['id'])
+            metadata_away = get_team_stats(tomorrow.year, fixture['teams']['away']['id'])
+            if not metadata_away:
+                metadata_away = get_team_stats(tomorrow.year - 1, fixture['teams']['away']['id'])
 
             f, _ = Match.objects.get_or_create(
                 rapidapi_id=fixture['fixture']['id'],
                 defaults={
                     'type': 'football',
                     'date': datetime.fromisoformat(fixture['fixture']['date']).date(),
-                    'participant_1': fixture['teams']['home']['name'],
-                    'participant_2': fixture['teams']['away']['name'],
-                    'metadata_participant_1': metadata_participant_1,
-                    'metadata_participant_2': metadata_participant_2,
+                    'home': fixture['teams']['home']['name'],
+                    'away': fixture['teams']['away']['name'],
+                    'metadata_home': metadata_home,
+                    'metadata_away': metadata_away,
                     'metadata': fixture
                 }
             )
@@ -74,6 +74,11 @@ def get_model_prediction():
         )
     )
     return result
+
+
+def get_match_odds(home, away):
+    pass
+
 
 
 class AIModels:
