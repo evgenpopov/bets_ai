@@ -4,7 +4,7 @@ from .models import ModelAI, Match, Prediction, BalanceHistory
 
 @admin.register(Match)
 class MatchAdmin(admin.ModelAdmin):
-    list_display = ('home', 'away', 'winner', 'type', 'date')
+    list_display = ('date', 'home', 'away', 'winner', 'type',)
     search_fields = ('home', 'away')
     list_filter = ('type', 'date')
     ordering = ('-date',)

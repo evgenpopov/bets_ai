@@ -9,7 +9,7 @@ def index(request):
     matches = Match.objects.all()
     predictions = Prediction.objects.select_related("ai_model", "match").all()[:10]
     balance_history = BalanceHistory.objects.select_related("ai_model").order_by("-date")
-
+    get_match_odds("France", "Ukraine")
     history = BalanceHistory.objects.order_by("date")
     data = {}
     for h in history:

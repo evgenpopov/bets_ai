@@ -33,10 +33,10 @@ class Match(models.Model):
         return f"[{self.date}] {self.home} vs {self.away}"
 
     def auto_set_winner(self):
-        if self.home is not None and self.away is not None:
-            if self.home > self.away:
+        if self.score_home is not None and self.score_away is not None:
+            if self.score_home > self.score_away:
                 self.winner = self.home
-            elif self.away > self.home:
+            elif self.score_away > self.score_home:
                 self.winner = self.away
             else:
                 self.winner = "Draw"

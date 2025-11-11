@@ -2,6 +2,7 @@ import os
 import requests
 from openai import OpenAI
 from dotenv import load_dotenv
+from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 
 from .models import Match
@@ -77,6 +78,16 @@ def get_model_prediction():
 
 
 def get_match_odds(home, away):
+    response = requests.get("https://www.olbg.com/betting-tips/Football/1")
+    soup = BeautifulSoup(response.content, "html.parser")
+    matches = soup.find_all("a")
+    for i in matches:
+        print(i)
+    # for match in matches:
+    #     event_name = match.find("h5").text
+    #     print(event_name)
+    #     if home in event_name or away in event_name:
+    #         print(link.get("href"))
     pass
 
 
