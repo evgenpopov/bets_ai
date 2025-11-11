@@ -1,7 +1,8 @@
 import os
 import requests
-from datetime import datetime, timedelta
+from openai import OpenAI
 from dotenv import load_dotenv
+from datetime import datetime, timedelta
 
 from .models import Match
 
@@ -24,12 +25,12 @@ def get_matches(date):
 
 def get_team_stats(season, team_id):
     response = requests.get(
-        "https://api-football-v1.p.rapidapi.com/v3/fixtures" ,
+        "https://api-football-v1.p.rapidapi.com/v3/fixtures",
         headers={
             "x-rapidapi-key": os.getenv("RAPIDAPI_KEY"),
             "x-rapidapi-host": os.getenv("RAPIDAPI_HOST")
         },
-        params={"season":f"{season}","team":f"{team_id}"}
+        params={"season": f"{season}", "team": f"{team_id}"}
     )
 
     return response.json()['response']
@@ -62,24 +63,67 @@ def create_matches_obj():
             )
 
 
+def get_model_prediction():
+    result = AIModels().openai(
+        system_prompt=SYSTEM_PROMPT.format("1000"),
+        user_prompt=USER_PROMPT.format(
+            "1000", "France", "Ukraine", "13.11.2025 21:45",
+            "France vs New Zealand: Draw 2–2", "France vs Germany: Win 2–0",
+            "Ukraine vs Canada: Lost 2–4", "Ukraine vs New Zealand: Won 2–1",
+            "1.19", "6.90", "16.50"
+        )
+    )
+    return result
+
+
 class AIModels:
-    def openai(self):
-        pass
+    def openai(self, system_prompt, user_prompt):
+        client = OpenAI(api_key=os.getenv("OPENAI_KEY"))
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            temperature=0.2,
+            frequency_penalty=0,
+            presence_penalty=0,
+            max_tokens=200,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ]
+        ).choices[0].message.content
+
+        return response
+
+    def anthropic(self, system_prompt, user_prompt):
+        headers = {
+            "x-api-key": os.getenv("ANTHROPIC_API_KEY"),
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json"
+        }
+        data = {
+            "model": "claude-3-7-sonnet-20250219",
+            "max_tokens": 250,
+            "temperature": 1,
+            "system": system_prompt,
+            "messages": [{"role": "user", "content": user_prompt}],
+        }
+        response = requests.post("https://api.anthropic.com/v1/messages", headers=headers, json=data)
+
+        return response
 
     def gemini(self):
-        pass
-
-    def anthropic(self):
         pass
 
     def deepseek(self):
         pass
 
 
-PROMPT = f'''
+SYSTEM_PROMPT = '''
     You are a professional sports betting AI with a budget of ${0}. Your goal is to recommend a single bet 
     on the upcoming match using a data-driven, risk-managed strategy.
+'''
 
+
+USER_PROMPT = '''
     Rules:
      - Never bet more than 15% of your total budget on a single outcome.
      - Use only the provided data: match info, historical results, and betting odds.
@@ -108,12 +152,15 @@ PROMPT = f'''
      - Decide the most likely outcome (home win, draw, away win).
      - Calculate the optimal stake amount (max 15% of ${0}).
     Output strictly in this JSON format:
-        {
           "result": "{1}",  // or "{2}" or "Draw"
-          "stake": 30          // numeric value in dollars
-        }
+          "stake": 30       // numeric value in dollars
     Constraints:
      - Only return JSON, no additional explanation.
      - Use probability analysis and risk management to determine both outcome and stake.
      - Prioritize risk management and probability analysis in your decision.
+     - Return ONLY valid JSON string using double quotes ("), as per JSON specification. 
+     - Do NOT use single quotes under any circumstances.
+     - *** Do NOT use ```json, just clean dict with double quotes. ***
+     - *** NEVER use single quotes (') — output MUST be valid JSON. ***
+     - The output must be a valid JSON dictionary — not a Python dict.
 '''
