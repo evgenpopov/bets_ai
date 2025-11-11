@@ -24,14 +24,8 @@
       margin-bottom: 20px;
     }
 
-    h1 {
-      font-size: 2rem;
-    }
-
-    h3 {
-      font-size: 1.4rem;
-      margin-top: 40px;
-    }
+    h1 { font-size: 2rem; }
+    h3 { font-size: 1.4rem; margin-top: 40px; }
 
     button {
       background: #3B82F6;
@@ -44,9 +38,7 @@
       transition: 0.2s;
     }
 
-    button:hover {
-      background: #2563eb;
-    }
+    button:hover { background: #2563eb; }
 
     table {
       width: 100%;
@@ -58,24 +50,15 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
 
-    th, td {
-      padding: 12px 15px;
-      text-align: left;
-    }
-
+    th, td { padding: 12px 15px; text-align: left; }
     th {
       background-color: #f1f3f5;
       font-weight: 600;
       color: #374151;
     }
 
-    tr:nth-child(even) {
-      background-color: #fafafa;
-    }
-
-    tr:hover {
-      background-color: #e0f2fe;
-    }
+    tr:nth-child(even) { background-color: #fafafa; }
+    tr:hover { background-color: #e0f2fe; }
 
     hr {
       border: none;
@@ -91,12 +74,6 @@
       margin-bottom: 20px;
     }
 
-    .center {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    /* ======= Model Balances Section ======= */
     .model-balances {
       display: flex;
       justify-content: center;
@@ -120,9 +97,7 @@
       text-decoration: none;
     }
 
-    .model-balance a:hover {
-      text-decoration: underline;
-    }
+    .model-balance a:hover { text-decoration: underline; }
 
     .model-balance span {
       display: block;
@@ -133,147 +108,147 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Bets AI Dashboard</h1>
+<div class="container">
+  <h1>Bets AI Dashboard</h1>
 
-    <div class="model-balances">
-      {% for m in models %}
-        <div class="model-balance">
-          <a href="{% url 'model_detail' m.id %}">{{ m.name }}</a>
-          <span>${{ m.balance|floatformat:2 }}</span>
-        </div>
-      {% endfor %}
-    </div>
-
-    <canvas id="lineChart" width="800" height="350"></canvas>
-    <hr>
-
-    <h3>Bets History</h3>
-    <table>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Model</th>
-          <th>Match</th>
-          <th>Predicted Winner</th>
-          <th>Bet Amount ($)</th>
-          <th>Rate</th>
-          <th>Result ($)</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for p in predictions %}
-        <tr>
-          <td>{{ p.match.date|date:"Y-m-d" }}</td>
-          <td>{{ p.ai_model.name }}</td>
-          <td>{{ p.match.participant_1 }} vs {{ p.match.participant_2 }}</td>
-          <td>{{ p.predicted_winner }}</td>
-          <td>{{ p.bet_amount|floatformat:2 }}</td>
-          <td>{{ p.odds|floatformat:2 }}</td>
-          <td>
-            {% if p.result is not None %}
-              {{ p.result|floatformat:2 }}
-            {% else %}
-              -
-            {% endif %}
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="7" class="no-data">No predictions yet</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <div class="model-balances">
+    {% for m in models %}
+      <div class="model-balance">
+        <a href="{% url 'model_detail' m.id %}">{{ m.name }}</a>
+        <span>${{ m.balance|floatformat:2 }}</span>
+      </div>
+    {% endfor %}
   </div>
 
+  <canvas id="lineChart" width="800" height="350"></canvas>
+  <hr>
+
+  <h3>Bets History</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Model</th>
+        <th>Match</th>
+        <th>Predicted Winner</th>
+        <th>Bet Amount</th>
+        <th>Rate</th>
+        <th>Result</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in predictions %}
+      <tr>
+        <td>{{ p.match.date|date:"Y-m-d" }}</td>
+        <td>{{ p.ai_model.name }}</td>
+        <td>{{ p.match.participant_1 }} vs {{ p.match.participant_2 }}</td>
+        <td>{{ p.predicted_winner }}</td>
+        <td>{{ p.bet_amount|floatformat:0 }}$</td>
+        <td>{{ p.odds|floatformat:2 }}</td>
+        <td>
+          {% if p.result is not None %}
+            {{ p.result|floatformat:0 }}$
+          {% else %}-{% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="7" class="no-data">No predictions yet</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
 <script>
-  const historyData = {{ history_data|safe }};
-  const labels = [...new Set(Object.values(historyData).flat().map(h => h.date))].sort();
+const historyData = {{ history_data|safe }};
+const labels = [...new Set(Object.values(historyData).flat().map(h => h.date))].sort();
+const colors = ['#3B82F6','#EF4444','#10B981','#F59E0B','#8B5CF6'];
 
-  const colors = ['#3B82F6','#EF4444','#10B981','#F59E0B','#8B5CF6'];
-
-  const datasets = Object.entries(historyData).map(([model, entries], idx) => {
-    const color = colors[idx % colors.length];
-    const data = labels.map(date => {
-      const entry = entries.find(e => e.date === date);
-      return entry ? entry.balance : null;
-    });
-    return {
-      label: model,
-      data,
-      borderColor: color,
-      backgroundColor: color,
-      fill: false,
-      tension: 0.4,
-      pointRadius: 0,
-      borderWidth: 2
-    };
+const datasets = Object.entries(historyData).map(([model, entries], idx) => {
+  const color = colors[idx % colors.length];
+  const data = labels.map(date => {
+    const entry = entries.find(e => e.date === date);
+    return entry ? entry.balance : null;
   });
-
-  // Плагин для отображения текущего баланса справа
-  const balanceLabelPlugin = {
-    id: 'balanceLabelPlugin',
-    afterDatasetsDraw(chart) {
-      const { ctx, chartArea } = chart;
-      ctx.save();
-      ctx.font = 'bold 12px Inter';
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'middle';
-
-      const paddingRight = 30;
-
-      chart.data.datasets.forEach((dataset, i) => {
-        const meta = chart.getDatasetMeta(i);
-        const points = meta.data.filter(p => p && !isNaN(p.parsed.y));
-        if (points.length > 0) {
-          // Берём последнюю не-null точку
-          let lastIndex = dataset.data.length - 1;
-          while(lastIndex >=0 && dataset.data[lastIndex] === null) lastIndex--;
-          if(lastIndex >=0) {
-            const lastPoint = meta.data[lastIndex];
-            const lastValue = dataset.data[lastIndex];
-            if(lastPoint && lastValue !== undefined) {
-              const x = chartArea.right - paddingRight;
-              const y = lastPoint.y;
-              ctx.fillStyle = dataset.borderColor;
-              ctx.fillText(`$${lastValue.toFixed(2)}`, x, y);
-            }
-          }
-        }
-      });
-
-      ctx.restore();
-    }
+  return {
+    label: model,
+    data,
+    borderColor: color,
+    backgroundColor: color,
+    fill: false,
+    tension: 0.4,
+    pointRadius: 0,
+    borderWidth: 2
   };
+});
 
-  new Chart(document.getElementById('lineChart'), {
-    type: 'line',
-    data: { labels, datasets },
-    options: {
-      responsive: true,
-      layout: {
-        padding: {
-          right: 30
+// ===== Плагин для отображения баланса справа =====
+const balanceLabelPlugin = {
+  id: 'balanceLabelPlugin',
+  afterDatasetsDraw(chart) {
+    const { ctx } = chart;
+    ctx.save();
+    ctx.font = 'bold 12px Inter';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'middle';
+    const paddingRight = 8;
+    const verticalOffset = -5;
+
+    chart.data.datasets.forEach((dataset, i) => {
+      const meta = chart.getDatasetMeta(i);
+      if (!meta?.data?.length) return;
+
+      let lastIndex = dataset.data.length - 1;
+      while (lastIndex >= 0 && (dataset.data[lastIndex] === null || meta.data[lastIndex] === undefined)) {
+        lastIndex--;
+      }
+
+      if (lastIndex >= 0) {
+        const lastPoint = meta.data[lastIndex];
+        const lastValue = dataset.data[lastIndex];
+        if (lastPoint && lastValue !== undefined && !isNaN(lastValue)) {
+          const x = lastPoint.x + paddingRight;
+          const y = lastPoint.y + verticalOffset;
+          ctx.fillStyle = dataset.borderColor;
+          ctx.fillText(`$${lastValue.toFixed(2)}`, x, y);
         }
-      },
-      plugins: {
-        legend: {
-          position: 'top',
-          labels: { usePointStyle: true, pointStyle: 'line', padding: 20 }
-        },
-        tooltip: { mode: 'index', intersect: false }
-      },
-      interaction: { mode: 'nearest', axis: 'x', intersect: false },
-      scales: {
-        y: { beginAtZero: true, ticks: { callback: value => '$' + value.toFixed(0) } },
-        x: { ticks: { maxRotation: 45, minRotation: 0 } }
+      }
+    });
+
+    ctx.restore();
+  }
+};
+
+// ===== Инициализация графика с отступом только справа =====
+new Chart(document.getElementById('lineChart'), {
+  type: 'line',
+  data: { labels, datasets },
+  options: {
+    responsive: true,
+    layout: {
+      padding: {
+        left: 0,    // слева не трогаем
+        right: 60,  // отступ справа
+        top: 0,
+        bottom: 0
       }
     },
-    plugins: [balanceLabelPlugin]
-  });
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: { usePointStyle: true, pointStyle: 'line', padding: 20 }
+      },
+      tooltip: { mode: 'index', intersect: false }
+    },
+    interaction: { mode: 'nearest', axis: 'x', intersect: false },
+    scales: {
+      y: { beginAtZero: true, ticks: { callback: value => '$' + value.toFixed(0) } },
+      x: { offset: true, ticks: { maxRotation: 45, minRotation: 0 } }
+    }
+  },
+  plugins: [balanceLabelPlugin]
+});
 </script>
-
-
 </body>
 </html>

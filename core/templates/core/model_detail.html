@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>{{ model.name }} - Bets</title>
   <style>
-    /* 🌟 Стиль, похожий на nof1.ai */
     body {
       background-color: #f9f9f9;
       color: #222;
@@ -77,7 +76,7 @@
 <body>
   <div class="container">
     <h1>{{ model.name }}</h1>
-    <div class="balance">Balance: ${{ model.balance|floatformat:2 }}</div>
+    <div class="balance">Balance: {{ model.balance|floatformat:2 }}$</div>
 
     <table>
       <thead>
@@ -85,9 +84,9 @@
           <th>Date</th>
           <th>Match</th>
           <th>Predicted Winner</th>
-          <th>Bet Amount ($)</th>
-          <th>Odds</th>
-          <th>Result ($)</th>
+          <th>Bet Amount</th>
+          <th>Rate</th>
+          <th>Result</th>
         </tr>
       </thead>
       <tbody>
@@ -96,11 +95,11 @@
           <td>{{ p.match.date|date:"Y-m-d" }}</td>
           <td>{{ p.match.participant_1 }} vs {{ p.match.participant_2 }}</td>
           <td>{{ p.predicted_winner }}</td>
-          <td>{{ p.bet_amount|floatformat:2 }}</td>
+          <td>{{ p.bet_amount|floatformat:0 }}$</td>
           <td>{{ p.odds|floatformat:2 }}</td>
           <td>
             {% if p.result is not None %}
-              {{ p.result|floatformat:2 }}
+              {{ p.result|floatformat:0 }}$
             {% else %}
               -
             {% endif %}
