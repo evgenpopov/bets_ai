@@ -38,7 +38,7 @@ def get_team_stats(season, team_id):
 
 
 def create_matches_obj():
-    tomorrow = datetime.now() + timedelta(days=3)
+    tomorrow = datetime.now() + timedelta(days=1)
     matches = get_matches(tomorrow.strftime("%Y-%m-%d"))
 
     for fixture in matches:
@@ -77,18 +77,46 @@ def get_model_prediction():
     return result
 
 
+def get_url_data(url):
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.text
+
+    api_key = os.getenv('SCRAPER_API_KEY')
+
+    params = {
+        'api_key': api_key,
+        'url': url,
+        'render_js': False
+    }
+
+    response = requests.get(url='https://proxy.scrapeops.io/v1/', params=params)
+    if response.status_code == 200:
+        return response.text
+    return None
+
 def get_match_odds(home, away):
+    result = {}
     response = requests.get("https://www.olbg.com/betting-tips/Football/1")
     soup = BeautifulSoup(response.content, "html.parser")
-    matches = soup.find_all("a")
-    for i in matches:
-        print(i)
-    # for match in matches:
-    #     event_name = match.find("h5").text
-    #     print(event_name)
-    #     if home in event_name or away in event_name:
-    #         print(link.get("href"))
-    pass
+    for match in soup.find_all("a"):
+        event_name_block = match.find("h5")
+        if event_name_block:
+            event_name = event_name_block.text
+            if home in event_name or away in event_name:
+                response = requests.get(match.get("href"))
+                soup = BeautifulSoup(response.content, "html.parser")
+                main_block = soup.find("div", {"class": "expanded"})
+                odds_category = main_block.find_all("a")
+                for section in odds_category:
+                    title_section = section.find("h4")
+                    if (title_section and
+                            (home in title_section.text or away in title_section.text or "Draw" in title_section.text)):
+                        result[title_section.text.strip()] = section.find(
+                            "span", {"class": "ui-odds"}
+                        ).get("data-decimal")
+                break
+    return result
 
 
 

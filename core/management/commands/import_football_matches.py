@@ -7,7 +7,7 @@ from core.utils import get_matches, get_team_stats, LEAGUES_LIST_ID
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        tomorrow = datetime.now() + timedelta(days=2)
+        tomorrow = datetime.now() + timedelta(days=1)
         matches = get_matches(tomorrow.strftime("%Y-%m-%d"))
 
         for fixture in matches:
