@@ -172,4 +172,5 @@ def update_matches(request):
                     ai_model=prediction.ai_model,
                     balance=prediction.ai_model.balance + pending_bets
                 )
+
     return redirect('index')

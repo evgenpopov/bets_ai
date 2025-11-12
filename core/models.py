@@ -39,7 +39,8 @@ class Match(models.Model):
     def __str__(self):
         return f"[{self.date}] {self.home} vs {self.away}"
 
-    def auto_set_winner(self):
+    def save(self, *args, **kwargs):
+        # auto set winner
         if self.score_home is not None and self.score_away is not None:
             if self.score_home > self.score_away:
                 self.winner = self.home
@@ -47,9 +48,6 @@ class Match(models.Model):
                 self.winner = self.away
             else:
                 self.winner = "Draw"
-
-    def save(self, *args, **kwargs):
-        self.auto_set_winner()
         super().save(*args, **kwargs)
 
 
@@ -63,7 +61,7 @@ class Prediction(models.Model):
     result = models.CharField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.ai_model.name} → {self.match}: {self.predicted_winner} (odds {self.odds})"
+        return f"{self.ai_model.name} → {self.match}: {self.predicted_winner} (rate {self.odds})"
 
 
 class BalanceHistory(models.Model):
