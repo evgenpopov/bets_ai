@@ -12,7 +12,7 @@ class MatchAdmin(admin.ModelAdmin):
 
 @admin.register(ModelAI)
 class ModelAIAdmin(admin.ModelAdmin):
-    list_display = ('name', 'balance')
+    list_display = ('name', 'balance',)
     search_fields = ('name',)
     ordering = ('name',)
 

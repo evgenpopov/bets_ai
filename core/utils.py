@@ -64,14 +64,13 @@ def create_matches_obj():
             )
 
 
-def get_model_prediction():
+def get_model_prediction(data):
     result = AIModels().openai(
-        system_prompt=SYSTEM_PROMPT.format("1000"),
+        system_prompt=SYSTEM_PROMPT.format(data.get("balance")),
         user_prompt=USER_PROMPT.format(
-            "1000", "France", "Ukraine", "13.11.2025 21:45",
-            "France vs New Zealand: Draw 2–2", "France vs Germany: Win 2–0",
-            "Ukraine vs Canada: Lost 2–4", "Ukraine vs New Zealand: Won 2–1",
-            "1.19", "6.90", "16.50"
+            data.get("balance"), data.get("home"), data.get("away"), data.get("date"),
+            data.get("home_last_results"), data.get("away_last_results"),
+            data.get("home_rate"), data.get("draw_rate"), data.get("away_rate")
         )
     )
     return result
@@ -110,8 +109,10 @@ def get_match_odds(home, away):
                 odds_category = main_block.find_all("a")
                 for section in odds_category:
                     title_section = section.find("h4")
-                    if (title_section and
-                            (home in title_section.text or away in title_section.text or "Draw" in title_section.text)):
+                    if not title_section:
+                        continue
+                    title = title_section.text.strip()
+                    if any(title == t for t in [home, away, "Draw"]):
                         result[title_section.text.strip()] = section.find(
                             "span", {"class": "ui-odds"}
                         ).get("data-decimal")
@@ -182,15 +183,13 @@ USER_PROMPT = '''
      - Away Team: {2}
      - Date: {3}
     Recent Form ({1} last matches):
-     - {4} Ukraine vs Canada: Lost 2–4
-     - {5} Ukraine vs New Zealand: Won 2–1
+     - {4}
     Recent Form ({2} last matches):
-     - {6} Ukraine vs Canada: Lost 2–4
-     - {7} Ukraine vs New Zealand: Won 2–1
+     - {5}
     Betting Odds:
-     - Win {1}: {8}
-     - Draw: {9}
-     - Win {2}: {10}
+     - Win {1}: {6}
+     - Draw: {7}
+     - Win {2}: {8}
     Your Task:
      - Analyze the matchup using the odds, team form, and home advantage.
      - Decide the most likely outcome (home win, draw, away win).

@@ -17,9 +17,33 @@
       margin: auto;
     }
 
+    header {
+      display: flex;
+      align-items: center;
+      gap: 20px; /* расстояние между кнопкой и заголовком */
+      margin-bottom: 30px;
+    }
+
+    .home-button {
+      display: inline-block;
+      background-color: #007bff;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: background-color 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .home-button:hover {
+      background-color: #0056b3;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
+
     h1 {
       font-size: 2rem;
-      margin-bottom: 0.2em;
+      margin: 0;
     }
 
     .balance {
@@ -75,8 +99,16 @@
 </head>
 <body>
   <div class="container">
-    <h1>{{ model.name }}</h1>
-    <div class="balance">Balance: {{ model.balance|floatformat:2 }}$</div>
+
+    <header>
+      <a href="{% url 'index' %}" class="home-button">Dashboard</a>
+      <h1>{{ model.name }}</h1>
+    </header>
+
+    <div class="balance">
+      Balance: ${{ display_balance|floatformat:2 }}
+      <small>(${{ pending_bets|floatformat:2 }} in bets)</small>
+    </div>
 
     <table>
       <thead>
@@ -92,7 +124,7 @@
       <tbody>
         {% for p in predictions %}
         <tr>
-          <td>{{ p.match.date|date:"Y-m-d" }}</td>
+          <td>{{ p.match.date|date:"(D) d.m.Y" }}</td>
           <td>{{ p.match.home }} vs {{ p.match.away }}</td>
           <td>{{ p.predicted_winner }}</td>
           <td>{{ p.bet_amount|floatformat:0 }}$</td>

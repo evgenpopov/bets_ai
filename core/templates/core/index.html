@@ -116,18 +116,21 @@
     </a>
   </div>
   <div class="model-balances">
-    {% for m in models %}
-      <div class="model-balance">
-        <a href="{% url 'model_detail' m.id %}">{{ m.name }}</a>
-        <span>${{ m.balance|floatformat:2 }}</span>
-      </div>
-    {% endfor %}
+  {% for m in models %}
+    <div class="model-balance">
+      <a href="{% url 'model_detail' m.slug %}">{{ m.name }}</a>
+      <span>
+        ${{ m.display_balance|floatformat:2 }}
+        (${{ m.pending_bets|floatformat:2 }} in bets)
+      </span>
+    </div>
+  {% endfor %}
   </div>
 
   <canvas id="lineChart" width="800" height="350"></canvas>
   <hr>
 
-  <h3>Bets History</h3>
+  <h3>Last Bets</h3>
   <table>
     <thead>
       <tr>
@@ -143,7 +146,7 @@
     <tbody>
       {% for p in predictions %}
       <tr>
-        <td>{{ p.match.date|date:"Y-m-d" }}</td>
+        <td>{{ p.match.date|date:"(D) d.m.Y" }}</td>
         <td>{{ p.ai_model.name }}</td>
         <td>{{ p.match.home }} vs {{ p.match.away }}</td>
         <td>{{ p.predicted_winner }}</td>
