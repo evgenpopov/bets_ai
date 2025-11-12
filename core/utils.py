@@ -24,6 +24,19 @@ def get_matches(date):
     return response.json()['response']
 
 
+def get_unfinished_match_data(rapidapi_id):
+    response = requests.get(
+        "https://api-football-v1.p.rapidapi.com/v3/fixtures",
+        headers={
+            "x-rapidapi-key": os.getenv("RAPIDAPI_KEY"),
+            "x-rapidapi-host": os.getenv("RAPIDAPI_HOST")
+        },
+        params={"id": str(rapidapi_id)}
+    )
+
+    return response.json()['response']
+
+
 def get_team_stats(season, team_id):
     response = requests.get(
         "https://api-football-v1.p.rapidapi.com/v3/fixtures",
@@ -75,24 +88,6 @@ def get_model_prediction(data):
     )
     return result
 
-
-def get_url_data(url):
-    response = requests.get(url)
-    if response.status_code == 200:
-        return response.text
-
-    api_key = os.getenv('SCRAPER_API_KEY')
-
-    params = {
-        'api_key': api_key,
-        'url': url,
-        'render_js': False
-    }
-
-    response = requests.get(url='https://proxy.scrapeops.io/v1/', params=params)
-    if response.status_code == 200:
-        return response.text
-    return None
 
 def get_match_odds(home, away):
     result = {}

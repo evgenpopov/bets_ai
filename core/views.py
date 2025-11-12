@@ -11,11 +11,11 @@ def index(request):
     matches = Match.objects.all()
     latest_preds = Prediction.objects.filter(
         ai_model=OuterRef('ai_model')
-    ).order_by('-match__date')
+    ).order_by('-id')
 
     predictions = Prediction.objects.filter(
         id__in=Subquery(latest_preds.values('id')[:3])
-    )
+    ).order_by('-id')
     balance_history = BalanceHistory.objects.select_related("ai_model").order_by("-date")
     history = BalanceHistory.objects.order_by("date")
     data = {}
@@ -52,21 +52,18 @@ def index(request):
 
 def model_detail(request, slug):
     model = get_object_or_404(ModelAI, slug=slug)
-    predictions = model.predictions.select_related('match').order_by('-match__date')
+    predictions = model.predictions.select_related('match').order_by('-id')
 
     pending_bets = model.predictions.filter(
         match__winner__isnull=True
     ).aggregate(total=Sum("bet_amount"))["total"] or 0
 
-    display_balance = model.balance + pending_bets
-
     return render(request, 'core/model_detail.html', {
         'model': model,
         'predictions': predictions,
         'pending_bets': pending_bets,
-        'display_balance': display_balance,
+        'display_balance': model.balance + pending_bets,
     })
-
 
 
 def make_bets(request):
@@ -84,6 +81,7 @@ def make_bets(request):
             "draw_rate": odds_data.get("Draw", "None"),
             "away_rate": odds_data.get(match.away, "None"),
         }
+
         prediction_data = json.loads(get_model_prediction(data))
         prediction_result = prediction_data.get("result")
         prediction_stake = prediction_data.get("stake")
@@ -94,8 +92,8 @@ def make_bets(request):
             bet_amount=prediction_stake,
             odds=odds_data.get(prediction_result, 1.5),
         )
+
         model.balance -= float(prediction_stake)
-        print(model.balance)
         model.save()
 
     return redirect('index')

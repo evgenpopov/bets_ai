@@ -130,11 +130,7 @@
           <td>{{ p.bet_amount|floatformat:0 }}$</td>
           <td>{{ p.odds|floatformat:2 }}</td>
           <td>
-            {% if p.result is not None %}
-              {{ p.result|floatformat:0 }}$
-            {% else %}
-              -
-            {% endif %}
+            {% if p.result is not None %}{{ p.result|floatformat:0 }}${% endif %}
           </td>
         </tr>
         {% empty %}

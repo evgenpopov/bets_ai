@@ -60,28 +60,7 @@ class Prediction(models.Model):
     predicted_winner = models.CharField(max_length=100)
     bet_amount = models.FloatField(default=100.0)
     odds = models.FloatField(default=1.5)
-    result = models.FloatField(null=True, blank=True)
-
-    def evaluate(self):
-        if not self.match.winner:
-            return
-
-        if self.match.winner == "Draw":
-            self.result = 0
-        elif self.predicted_winner == self.match.winner:
-            self.result = self.bet_amount * (self.odds - 1)
-        else:
-            self.result = -self.bet_amount
-
-        self.save()
-
-        self.ai_model.balance += self.result
-        self.ai_model.save()
-
-        BalanceHistory.objects.create(
-            ai_model=self.ai_model,
-            balance=self.ai_model.balance
-        )
+    result = models.CharField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.ai_model.name} → {self.match}: {self.predicted_winner} (odds {self.odds})"

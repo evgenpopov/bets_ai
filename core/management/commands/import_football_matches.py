@@ -1,12 +1,15 @@
+import json
 from datetime import datetime, timedelta
 from django.core.management.base import BaseCommand
 
-from core.models import Match
-from core.utils import get_matches, get_team_stats, LEAGUES_LIST_ID
+from core.models import ModelAI, Match, Prediction
+from core.utils import get_matches, get_match_odds, get_team_stats, get_model_prediction, LEAGUES_LIST_ID
 
 
 class Command(BaseCommand):
+    # every day at 08:00
     def handle(self, *args, **options):
+        # IMPORT MATCHES #
         tomorrow = datetime.now() + timedelta(days=1)
         matches = get_matches(tomorrow.strftime("%Y-%m-%d"))
 
@@ -31,3 +34,35 @@ class Command(BaseCommand):
                         'metadata': fixture
                     }
                 )
+
+        # CREATE PREDICTIONS #
+        matches = Match.objects.filter(winner__isnull=True)
+        model = ModelAI.objects.get(name="ChatGPT 4")  # make qs of all models
+
+        for match in matches:
+            odds_data = get_match_odds(match.home, match.away)
+            if not odds_data:
+                continue
+            data = {
+                "balance": model.balance, "home": match.home, "away": match.away,
+                "date": match.date.strftime("%Y-%m-%d"),
+                "home_last_results": match.metadata_home[:3] if match.metadata_home else "",
+                "away_last_results": match.metadata_away[:3] if match.metadata_away else "",
+                "home_rate": odds_data.get(match.home, "None"),
+                "draw_rate": odds_data.get("Draw", "None"),
+                "away_rate": odds_data.get(match.away, "None"),
+            }
+
+            prediction_data = json.loads(get_model_prediction(data))
+            prediction_result = prediction_data.get("result")
+            prediction_stake = prediction_data.get("stake")
+            Prediction.objects.create(
+                ai_model=model,
+                match=match,
+                predicted_winner=prediction_result,
+                bet_amount=prediction_stake,
+                odds=odds_data.get(prediction_result, 1.5),
+            )
+
+            model.balance -= float(prediction_stake)
+            model.save()
