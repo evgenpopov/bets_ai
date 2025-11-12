@@ -110,11 +110,16 @@
 <body>
 <div class="container">
   <h1>Bets AI Dashboard</h1>
+  {% if request.user.is_staff %}
   <div style="text-align: center; margin-bottom: 30px;">
-    <a href="{% url 'make_bets' %}">
-      <button>Сгенерировать ставки</button>
+    <a href="{% url 'import_matches' %}">
+      <button>Import matches + predictions</button>
+    </a>
+    <a href="{% url 'update_matches' %}">
+      <button>Update matches + predictions</button>
     </a>
   </div>
+  {% endif %}
   <div class="model-balances">
   {% for m in models %}
     <div class="model-balance">
