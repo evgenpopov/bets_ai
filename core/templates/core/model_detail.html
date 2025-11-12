@@ -1,145 +1,157 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>{{ model.name }} - Bets</title>
-  <style>
-    body {
-      background-color: #f9f9f9;
-      color: #222;
-      font-family: 'Inter', sans-serif;
-      margin: 0;
-      padding: 20px;
-    }
+    <meta charset="UTF-8">
+    <title>{{ model.name }} - Bets</title>
+    <style>
+        body {
+          background-color: #f9f9f9;
+          color: #222;
+          font-family: 'Inter', sans-serif;
+          margin: 0;
+          padding: 20px;
+        }
 
-    .container {
-      max-width: 1000px;
-      margin: auto;
-    }
+        .container {
+          max-width: 1000px;
+          margin: auto;
+        }
 
-    header {
-      display: flex;
-      align-items: center;
-      gap: 20px; /* расстояние между кнопкой и заголовком */
-      margin-bottom: 30px;
-    }
+        header {
+          display: flex;
+          align-items: center;
+          gap: 20px; /* расстояние между кнопкой и заголовком */
+          margin-bottom: 30px;
+        }
 
-    .home-button {
-      display: inline-block;
-      background-color: #007bff;
-      color: white;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-size: 0.95rem;
-      text-decoration: none;
-      transition: background-color 0.2s ease, box-shadow 0.2s ease;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
+        .home-button {
+          display: inline-block;
+          background-color: #007bff;
+          color: white;
+          padding: 8px 16px;
+          border-radius: 6px;
+          font-size: 0.95rem;
+          text-decoration: none;
+          transition: background-color 0.2s ease, box-shadow 0.2s ease;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
 
-    .home-button:hover {
-      background-color: #0056b3;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
+        .home-button:hover {
+          background-color: #0056b3;
+          box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
 
-    h1 {
-      font-size: 2rem;
-      margin: 0;
-    }
+        h1 {
+          font-size: 2rem;
+          margin: 0;
+        }
 
-    .balance {
-      font-size: 1.3rem;
-      color: #007bff;
-      margin-bottom: 20px;
-    }
+        .balance {
+          font-size: 1.3rem;
+          color: #007bff;
+          margin-bottom: 20px;
+        }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: #fff;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      border-radius: 8px;
-      overflow: hidden;
-    }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 20px;
+          background: #fff;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+          border-radius: 8px;
+          overflow: hidden;
+        }
 
-    th, td {
-      padding: 12px 15px;
-      text-align: left;
-    }
+        th, td {
+          padding: 12px 15px;
+          text-align: left;
+        }
 
-    th {
-      background-color: #f1f3f5;
-      font-weight: 600;
-      color: #555;
-    }
+        th {
+          background-color: #f1f3f5;
+          font-weight: 600;
+          color: #555;
+        }
 
-    tr:nth-child(even) {
-      background-color: #fafafa;
-    }
+        tr:nth-child(even) {
+          background-color: #fafafa;
+        }
 
-    tr:hover {
-      background-color: #e9f2ff;
-    }
+        tr:hover {
+          background-color: #e9f2ff;
+        }
 
-    a {
-      color: #007bff;
-      text-decoration: none;
-    }
+        a {
+          color: #007bff;
+          text-decoration: none;
+        }
 
-    a:hover {
-      text-decoration: underline;
-    }
+        a:hover {
+          text-decoration: underline;
+        }
 
-    .no-data {
-      text-align: center;
-      color: #888;
-      padding: 20px;
-    }
-  </style>
+        .no-data {
+          text-align: center;
+          color: #888;
+          padding: 20px;
+        }
+
+        td.positive {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        td.negative {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
+<div class="container">
 
     <header>
-      <a href="{% url 'index' %}" class="home-button">Dashboard</a>
-      <h1>{{ model.name }}</h1>
+        <a href="{% url 'index' %}" class="home-button">Dashboard</a>
+        <h1>{{ model.name }}</h1>
     </header>
 
     <div class="balance">
-      Balance: ${{ display_balance|floatformat:2 }}
-      <small>(${{ pending_bets|floatformat:2 }} in bets)</small>
+        Balance: ${{ display_balance|floatformat:2 }}
+        <small>(${{ pending_bets|floatformat:2 }} in bets)</small>
     </div>
 
     <table>
-      <thead>
+        <thead>
         <tr>
-          <th>Date</th>
-          <th>Match</th>
-          <th>Predicted Winner</th>
-          <th>Bet Amount</th>
-          <th>Rate</th>
-          <th>Result</th>
+            <th>Date</th>
+            <th>Match</th>
+            <th>Predicted Winner</th>
+            <th>Bet Amount</th>
+            <th>Rate</th>
+            <th>Result</th>
         </tr>
-      </thead>
-      <tbody>
+        </thead>
+        <tbody>
         {% for p in predictions %}
         <tr>
-          <td>{{ p.match.date|date:"(D) d.m.Y" }}</td>
-          <td>{{ p.match.home }} vs {{ p.match.away }}</td>
-          <td>{{ p.predicted_winner }}</td>
-          <td>{{ p.bet_amount|floatformat:0 }}$</td>
-          <td>{{ p.odds|floatformat:2 }}</td>
-          <td>
-            {% if p.result is not None %}{{ p.result|floatformat:0 }}${% endif %}
-          </td>
+            <td>{{ p.match.date|date:"(D) d.m.Y" }}</td>
+            <td>{{ p.match.home }} vs {{ p.match.away }}</td>
+            <td>{{ p.predicted_winner }}</td>
+            <td>{{ p.bet_amount|floatformat:0 }}$</td>
+            <td>{{ p.odds|floatformat:2 }}</td>
+            <td {% if p.result is not None %}{% if p.result < 0 %}class="negative" {% elif p.result > 0 %}class="positive"{% endif %}{% endif %}>
+                {% if p.result is not None %}
+                    {{ p.result|floatformat:0 }}$
+                {% endif %}
+            </td>
         </tr>
         {% empty %}
         <tr>
-          <td colspan="6" class="no-data">No predictions yet</td>
+            <td colspan="6" class="no-data">No predictions yet</td>
         </tr>
         {% endfor %}
-      </tbody>
+        </tbody>
     </table>
-  </div>
+</div>
 </body>
 </html>

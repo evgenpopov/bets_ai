@@ -1,264 +1,285 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Bets AI Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #f9f9f9;
-      color: #111827;
-      margin: 0;
-      padding: 40px 20px;
-    }
+    <meta charset="UTF-8">
+    <title>Bets AI Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+          font-family: 'Inter', sans-serif;
+          background: #f9f9f9;
+          color: #111827;
+          margin: 0;
+          padding: 40px 20px;
+        }
 
-    .container {
-      max-width: 1000px;
-      margin: auto;
-    }
+        .container {
+          max-width: 1000px;
+          margin: auto;
+        }
 
-    h1, h3 {
-      text-align: center;
-      color: #111827;
-      margin-bottom: 20px;
-    }
+        a {
+          color: #007bff;
+          text-decoration: none;
+        }
 
-    h1 { font-size: 2rem; }
-    h3 { font-size: 1.4rem; margin-top: 40px; }
+        a:hover {
+          text-decoration: underline;
+        }
 
-    button {
-      background: #3B82F6;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
+        h1, h3 {
+          text-align: center;
+          color: #111827;
+          margin-bottom: 20px;
+        }
 
-    button:hover { background: #2563eb; }
+        h1 { font-size: 2rem; }
+        h3 { font-size: 1.4rem; margin-top: 40px; }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      background: #ffffff;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
+        button {
+          background: #3B82F6;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          border-radius: 6px;
+          font-size: 16px;
+          cursor: pointer;
+          transition: 0.2s;
+        }
 
-    th, td { padding: 12px 15px; text-align: left; }
-    th {
-      background-color: #f1f3f5;
-      font-weight: 600;
-      color: #374151;
-    }
+        button:hover { background: #2563eb; }
 
-    tr:nth-child(even) { background-color: #fafafa; }
-    tr:hover { background-color: #e0f2fe; }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 10px;
+          background: #ffffff;
+          border-radius: 8px;
+          overflow: hidden;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
 
-    hr {
-      border: none;
-      border-top: 1px solid #e5e7eb;
-      margin: 40px 0;
-    }
+        th, td { padding: 12px 15px; text-align: left; }
+        th {
+          background-color: #f1f3f5;
+          font-weight: 600;
+          color: #374151;
+        }
 
-    canvas {
-      background: #ffffff;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      padding: 10px;
-      margin-bottom: 20px;
-    }
+        tr:nth-child(even) { background-color: #fafafa; }
+        tr:hover { background-color: #e0f2fe; }
 
-    .model-balances {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 20px;
-      margin-bottom: 30px;
-    }
+        hr {
+          border: none;
+          border-top: 1px solid #e5e7eb;
+          margin: 40px 0;
+        }
 
-    .model-balance {
-      background: #ffffff;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-      padding: 12px 18px;
-      text-align: center;
-      min-width: 150px;
-    }
+        canvas {
+          background: #ffffff;
+          border-radius: 8px;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+          padding: 10px;
+          margin-bottom: 20px;
+        }
 
-    .model-balance a {
-      color: #3B82F6;
-      font-weight: 600;
-      text-decoration: none;
-    }
+        .model-balances {
+          display: flex;
+          justify-content: center;
+          flex-wrap: wrap;
+          gap: 20px;
+          margin-bottom: 30px;
+        }
 
-    .model-balance a:hover { text-decoration: underline; }
+        .model-balance {
+          background: #ffffff;
+          border-radius: 8px;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+          padding: 12px 18px;
+          text-align: center;
+          min-width: 150px;
+        }
 
-    .model-balance span {
-      display: block;
-      font-size: 1.1rem;
-      color: #111827;
-      margin-top: 6px;
-    }
-  </style>
+        .model-balance a {
+          color: #3B82F6;
+          font-weight: 600;
+          text-decoration: none;
+        }
+
+        .model-balance a:hover { text-decoration: underline; }
+
+        .model-balance span {
+          display: block;
+          font-size: 1.1rem;
+          color: #111827;
+          margin-top: 6px;
+        }
+
+        td.positive {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        td.negative {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-  <h1>Bets AI Dashboard</h1>
-  {% if request.user.is_staff %}
-  <div style="text-align: center; margin-bottom: 30px;">
-    <a href="{% url 'import_matches' %}">
-      <button>Import matches + predictions</button>
-    </a>
-    <a href="{% url 'update_matches' %}">
-      <button>Update matches + predictions</button>
-    </a>
-  </div>
-  {% endif %}
-  <div class="model-balances">
-  {% for m in models %}
-    <div class="model-balance">
-      <a href="{% url 'model_detail' m.slug %}">{{ m.name }}</a>
-      <span>
+    <h1>Bets AI Dashboard</h1>
+    {% if request.user.is_staff %}
+    <div style="text-align: center; margin-bottom: 30px;">
+        <a href="{% url 'import_matches' %}">
+            <button>Import matches + predictions</button>
+        </a>
+        <a href="{% url 'update_matches' %}">
+            <button>Update matches + predictions</button>
+        </a>
+    </div>
+    {% endif %}
+    <div class="model-balances">
+        {% for m in models %}
+        <div class="model-balance">
+            <a href="{% url 'model_detail' m.slug %}">{{ m.name }}</a>
+            <span>
         ${{ m.display_balance|floatformat:2 }}
         (${{ m.pending_bets|floatformat:2 }} in bets)
       </span>
+        </div>
+        {% endfor %}
     </div>
-  {% endfor %}
-  </div>
 
-  <canvas id="lineChart" width="800" height="350"></canvas>
-  <hr>
+    <canvas id="lineChart" width="800" height="350"></canvas>
+    <hr>
 
-  <h3>Last Bets</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Model</th>
-        <th>Match</th>
-        <th>Predicted Winner</th>
-        <th>Bet Amount</th>
-        <th>Rate</th>
-        <th>Result</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for p in predictions %}
-      <tr>
-        <td>{{ p.match.date|date:"(D) d.m.Y" }}</td>
-        <td>{{ p.ai_model.name }}</td>
-        <td>{{ p.match.home }} vs {{ p.match.away }}</td>
-        <td>{{ p.predicted_winner }}</td>
-        <td>{{ p.bet_amount|floatformat:0 }}$</td>
-        <td>{{ p.odds|floatformat:2 }}</td>
-        <td>
-          {% if p.result is not None %}{{ p.result|floatformat:0 }}${% endif %}
-        </td>
-      </tr>
-      {% empty %}
-      <tr>
-        <td colspan="7" class="no-data">No predictions yet</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+    <h3>Last Bets</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th>Model</th>
+            <th>Match</th>
+            <th>Predicted Winner</th>
+            <th>Bet Amount</th>
+            <th>Rate</th>
+            <th>Result</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for p in predictions %}
+        <tr>
+            <td>{{ p.match.date|date:"(D) d.m.Y" }}</td>
+            <td><a href="{% url 'model_detail' p.ai_model.slug %}">{{ p.ai_model.name }}</a></td>
+            <td>{{ p.match.home }} vs {{ p.match.away }}</td>
+            <td>{{ p.predicted_winner }}</td>
+            <td>{{ p.bet_amount|floatformat:0 }}$</td>
+            <td>{{ p.odds|floatformat:2 }}</td>
+            <td {% if p.result is not None %}{% if p.result < 0 %}class="negative" {% elif p.result > 0 %}class="positive"{% endif %}{% endif %}>
+                {% if p.result is not None %}
+                    {{ p.result|floatformat:0 }}$
+                {% endif %}
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7" class="no-data">No predictions yet</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
 
 <script>
-const historyData = {{ history_data|safe }};
-const labels = [...new Set(Object.values(historyData).flat().map(h => h.date))].sort();
-const colors = ['#3B82F6','#EF4444','#10B981','#F59E0B','#8B5CF6'];
+    const historyData = {{ history_data|safe }};
+    const labels = [...new Set(Object.values(historyData).flat().map(h => h.date))].sort();
+    const colors = ['#3B82F6','#EF4444','#10B981','#F59E0B','#8B5CF6'];
 
-const datasets = Object.entries(historyData).map(([model, entries], idx) => {
-  const color = colors[idx % colors.length];
-  const data = labels.map(date => {
-    const entry = entries.find(e => e.date === date);
-    return entry ? entry.balance : null;
-  });
-  return {
-    label: model,
-    data,
-    borderColor: color,
-    backgroundColor: color,
-    fill: false,
-    tension: 0.4,
-    pointRadius: 0,
-    borderWidth: 2
-  };
-});
-
-// ===== Плагин для отображения баланса справа =====
-const balanceLabelPlugin = {
-  id: 'balanceLabelPlugin',
-  afterDatasetsDraw(chart) {
-    const { ctx } = chart;
-    ctx.save();
-    ctx.font = 'bold 12px Inter';
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    const paddingRight = 8;
-    const verticalOffset = -5;
-
-    chart.data.datasets.forEach((dataset, i) => {
-      const meta = chart.getDatasetMeta(i);
-      if (!meta?.data?.length) return;
-
-      let lastIndex = dataset.data.length - 1;
-      while (lastIndex >= 0 && (dataset.data[lastIndex] === null || meta.data[lastIndex] === undefined)) {
-        lastIndex--;
-      }
-
-      if (lastIndex >= 0) {
-        const lastPoint = meta.data[lastIndex];
-        const lastValue = dataset.data[lastIndex];
-        if (lastPoint && lastValue !== undefined && !isNaN(lastValue)) {
-          const x = lastPoint.x + paddingRight;
-          const y = lastPoint.y + verticalOffset;
-          ctx.fillStyle = dataset.borderColor;
-          ctx.fillText(`$${lastValue.toFixed(2)}`, x, y);
-        }
-      }
+    const datasets = Object.entries(historyData).map(([model, entries], idx) => {
+      const color = colors[idx % colors.length];
+      const data = labels.map(date => {
+        const entry = entries.find(e => e.date === date);
+        return entry ? entry.balance : null;
+      });
+      return {
+        label: model,
+        data,
+        borderColor: color,
+        backgroundColor: color,
+        fill: false,
+        tension: 0.4,
+        pointRadius: 0,
+        borderWidth: 2
+      };
     });
 
-    ctx.restore();
-  }
-};
+    // ===== Плагин для отображения баланса справа =====
+    const balanceLabelPlugin = {
+      id: 'balanceLabelPlugin',
+      afterDatasetsDraw(chart) {
+        const { ctx } = chart;
+        ctx.save();
+        ctx.font = 'bold 12px Inter';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        const paddingRight = 8;
+        const verticalOffset = -5;
 
-// ===== Инициализация графика с отступом только справа =====
-new Chart(document.getElementById('lineChart'), {
-  type: 'line',
-  data: { labels, datasets },
-  options: {
-    responsive: true,
-    layout: {
-      padding: {
-        left: 0,    // слева не трогаем
-        right: 60,  // отступ справа
-        top: 0,
-        bottom: 0
+        chart.data.datasets.forEach((dataset, i) => {
+          const meta = chart.getDatasetMeta(i);
+          if (!meta?.data?.length) return;
+
+          let lastIndex = dataset.data.length - 1;
+          while (lastIndex >= 0 && (dataset.data[lastIndex] === null || meta.data[lastIndex] === undefined)) {
+            lastIndex--;
+          }
+
+          if (lastIndex >= 0) {
+            const lastPoint = meta.data[lastIndex];
+            const lastValue = dataset.data[lastIndex];
+            if (lastPoint && lastValue !== undefined && !isNaN(lastValue)) {
+              const x = lastPoint.x + paddingRight;
+              const y = lastPoint.y + verticalOffset;
+              ctx.fillStyle = dataset.borderColor;
+              ctx.fillText(`$${lastValue.toFixed(2)}`, x, y);
+            }
+          }
+        });
+
+        ctx.restore();
       }
-    },
-    plugins: {
-      legend: {
-        position: 'top',
-        labels: { usePointStyle: true, pointStyle: 'line', padding: 20 }
+    };
+
+    // ===== Инициализация графика с отступом только справа =====
+    new Chart(document.getElementById('lineChart'), {
+      type: 'line',
+      data: { labels, datasets },
+      options: {
+        responsive: true,
+        layout: {
+          padding: {
+            left: 0,    // слева не трогаем
+            right: 60,  // отступ справа
+            top: 0,
+            bottom: 0
+          }
+        },
+        plugins: {
+          legend: {
+            position: 'top',
+            labels: { usePointStyle: true, pointStyle: 'line', padding: 20 }
+          },
+          tooltip: { mode: 'index', intersect: false }
+        },
+        interaction: { mode: 'nearest', axis: 'x', intersect: false },
+        scales: {
+          y: { beginAtZero: true, ticks: { callback: value => '$' + value.toFixed(0) } },
+          x: { offset: true, ticks: { maxRotation: 45, minRotation: 0 } }
+        }
       },
-      tooltip: { mode: 'index', intersect: false }
-    },
-    interaction: { mode: 'nearest', axis: 'x', intersect: false },
-    scales: {
-      y: { beginAtZero: true, ticks: { callback: value => '$' + value.toFixed(0) } },
-      x: { offset: true, ticks: { maxRotation: 45, minRotation: 0 } }
-    }
-  },
-  plugins: [balanceLabelPlugin]
-});
+      plugins: [balanceLabelPlugin]
+    });
 </script>
 </body>
 </html>
