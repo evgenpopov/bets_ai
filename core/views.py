@@ -1,5 +1,4 @@
 import json
-from celery import shared_task
 from datetime import datetime, timedelta
 from django.db.models import Sum, OuterRef, Subquery
 from django.shortcuts import render, get_object_or_404, redirect
@@ -69,8 +68,7 @@ def model_detail(request, slug):
         'display_balance': model.balance + pending_bets,
     })
 
-@shared_task
-def import_matches_task(request):
+def import_matches(request):
     tomorrow = datetime.now() + timedelta(days=1)
     matches = get_matches(tomorrow.strftime("%Y-%m-%d"))
 
@@ -127,11 +125,6 @@ def import_matches_task(request):
         model.balance -= float(prediction_stake)
         model.save()
 
-    return redirect('index')
-
-
-def import_matches(request):
-    import_matches_task.delay()
     return redirect('index')
 
 
