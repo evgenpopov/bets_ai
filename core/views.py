@@ -71,31 +71,29 @@ def model_detail(request, slug):
 
 def import_matches(request):
     tomorrow = datetime.now() + timedelta(days=1)
-    today_matches = get_matches(datetime.now().strftime("%Y-%m-%d"))
-    tomorrow_matches = get_matches(tomorrow.strftime("%Y-%m-%d"))
+    matches = get_matches(tomorrow.strftime("%Y-%m-%d"))
 
-    for matches in [today_matches, tomorrow_matches]:
-        for fixture in matches:
-            if fixture['league']['id'] in LEAGUES_LIST_ID:
-                metadata_home = get_team_stats(tomorrow.year, fixture['teams']['home']['id'])
-                if not metadata_home:
-                    metadata_home = get_team_stats(tomorrow.year - 1, fixture['teams']['home']['id'])
-                metadata_away = get_team_stats(tomorrow.year, fixture['teams']['away']['id'])
-                if not metadata_away:
-                    metadata_away = get_team_stats(tomorrow.year - 1, fixture['teams']['away']['id'])
+    for fixture in matches:
+        if fixture['league']['id'] in LEAGUES_LIST_ID:
+            metadata_home = get_team_stats(tomorrow.year, fixture['teams']['home']['id'])
+            if not metadata_home:
+                metadata_home = get_team_stats(tomorrow.year - 1, fixture['teams']['home']['id'])
+            metadata_away = get_team_stats(tomorrow.year, fixture['teams']['away']['id'])
+            if not metadata_away:
+                metadata_away = get_team_stats(tomorrow.year - 1, fixture['teams']['away']['id'])
 
-                f, _ = Match.objects.get_or_create(
-                    rapidapi_id=fixture['fixture']['id'],
-                    defaults={
-                        'type': 'football',
-                        'date': datetime.fromisoformat(fixture['fixture']['date']).date(),
-                        'home': fixture['teams']['home']['name'],
-                        'away': fixture['teams']['away']['name'],
-                        'metadata_home': metadata_home,
-                        'metadata_away': metadata_away,
-                        'metadata': fixture
-                    }
-                )
+            f, _ = Match.objects.get_or_create(
+                rapidapi_id=fixture['fixture']['id'],
+                defaults={
+                    'type': 'football',
+                    'date': datetime.fromisoformat(fixture['fixture']['date']).date(),
+                    'home': fixture['teams']['home']['name'],
+                    'away': fixture['teams']['away']['name'],
+                    'metadata_home': metadata_home,
+                    'metadata_away': metadata_away,
+                    'metadata': fixture
+                }
+            )
 
     matches = Match.objects.filter(winner__isnull=True)
     model = ModelAI.objects.get(name="ChatGPT 4")  # make qs of all models
