@@ -1,5 +1,7 @@
 import os
 from pathlib import Path
+
+import dj_database_url
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -66,6 +68,8 @@ DATABASES = {
         },
     }
 }
+
+DATABASES['default'] = dj_database_url.parse("postgresql://bets_ai_user:Q0FhPEQKovbvNiGNlgUICmHaEnolp6bF@dpg-d4b23uvgi27c7393gnkg-a.oregon-postgres.render.com/bets_ai")
 
 AUTH_PASSWORD_VALIDATORS = [
     {
