@@ -69,7 +69,7 @@ DATABASES = {
     }
 }
 
-DATABASES['default'] = dj_database_url.parse("postgresql://bets_ai_user:Q0FhPEQKovbvNiGNlgUICmHaEnolp6bF@dpg-d4b23uvgi27c7393gnkg-a.oregon-postgres.render.com/bets_ai")
+DATABASES['default'] = dj_database_url.parse(os.getenv("DB_URL"))
 
 AUTH_PASSWORD_VALIDATORS = [
     {
