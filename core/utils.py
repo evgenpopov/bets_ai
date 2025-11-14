@@ -77,15 +77,25 @@ def create_matches_obj():
             )
 
 
-def get_model_prediction(data):
-    result = AIModels().openai(
-        system_prompt=SYSTEM_PROMPT.format(data.get("balance")),
-        user_prompt=USER_PROMPT.format(
-            data.get("balance"), data.get("home"), data.get("away"), data.get("date"),
-            data.get("home_last_results"), data.get("away_last_results"),
-            data.get("home_rate"), data.get("draw_rate"), data.get("away_rate")
+def get_model_prediction(data, model_name):
+    if model_name == "ChatGPT 4":
+        result = AIModels().openai(
+            system_prompt=SYSTEM_PROMPT.format(data.get("balance")),
+            user_prompt=USER_PROMPT.format(
+                data.get("balance"), data.get("home"), data.get("away"), data.get("date"),
+                data.get("home_last_results"), data.get("away_last_results"),
+                data.get("home_rate"), data.get("draw_rate"), data.get("away_rate")
+            )
         )
-    )
+    else:
+        result = AIModels().perplexity(
+            system_prompt=SYSTEM_PROMPT.format(data.get("balance")),
+            user_prompt=USER_PROMPT.format(
+                data.get("balance"), data.get("home"), data.get("away"), data.get("date"),
+                data.get("home_last_results"), data.get("away_last_results"),
+                data.get("home_rate"), data.get("draw_rate"), data.get("away_rate")
+            )
+        )
     return result
 
 
@@ -150,11 +160,29 @@ class AIModels:
 
         return response
 
-    def gemini(self):
-        pass
+    def perplexity(self, system_prompt, user_prompt):
+        payload = {
+            "model": "sonar",
+            "messages": [
+                {
+                    "role": "system",
+                    "content": system_prompt
+                },
+                {
+                    "role": "user",
+                    "content": user_prompt,
+                }
+            ]
+        }
+        headers = {
+            "accept": "application/json",
+            "content-type": "application/json",
+            "Authorization": f"Bearer {os.getenv("PPLX_API_KEY")}"
+        }
 
-    def deepseek(self):
-        pass
+        response = requests.post("https://api.perplexity.ai/chat/completions", json=payload, headers=headers)
+
+        return response.json()["choices"][0]["message"]["content"]
 
 
 SYSTEM_PROMPT = '''

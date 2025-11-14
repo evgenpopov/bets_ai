@@ -1,3 +1,4 @@
+import ast
 import json
 from datetime import datetime, timedelta
 from django.db.models import Sum, OuterRef, Subquery
@@ -69,7 +70,8 @@ def model_detail(request, slug):
     })
 
 def import_matches(request):
-    tomorrow = datetime.now() + timedelta(days=1)
+    #tomorrow = datetime.now() + timedelta(days=1)
+    tomorrow = datetime.now()
     matches = get_matches(tomorrow.strftime("%Y-%m-%d"))
 
     for fixture in matches:
@@ -95,35 +97,36 @@ def import_matches(request):
             )
 
     matches = Match.objects.filter(winner__isnull=True)
-    model = ModelAI.objects.get(name="ChatGPT 4")  # make qs of all models
+    models = ModelAI.objects.all()
 
-    for match in matches:
-        odds_data = get_match_odds(match.home, match.away)
-        if not odds_data:
-            continue
-        data = {
-            "balance": model.balance, "home": match.home, "away": match.away,
-            "date": match.date.strftime("%Y-%m-%d"),
-            "home_last_results": match.metadata_home[:3] if match.metadata_home else "",
-            "away_last_results": match.metadata_away[:3] if match.metadata_away else "",
-            "home_rate": odds_data.get(match.home, "None"),
-            "draw_rate": odds_data.get("Draw", "None"),
-            "away_rate": odds_data.get(match.away, "None"),
-        }
+    for model in models:
+        for match in matches:
+            odds_data = get_match_odds(match.home, match.away)
+            if not odds_data:
+                continue
+            data = {
+                "balance": model.balance, "home": match.home, "away": match.away,
+                "date": match.date.strftime("%Y-%m-%d"),
+                "home_last_results": match.metadata_home[:3] if match.metadata_home else "",
+                "away_last_results": match.metadata_away[:3] if match.metadata_away else "",
+                "home_rate": odds_data.get(match.home, "None"),
+                "draw_rate": odds_data.get("Draw", "None"),
+                "away_rate": odds_data.get(match.away, "None"),
+            }
 
-        prediction_data = json.loads(get_model_prediction(data))
-        prediction_result = prediction_data.get("result")
-        prediction_stake = prediction_data.get("stake")
-        Prediction.objects.create(
-            ai_model=model,
-            match=match,
-            predicted_winner=prediction_result,
-            bet_amount=prediction_stake,
-            odds=odds_data.get(prediction_result, 1.5),
-        )
+            prediction_data = get_model_prediction(data, model.name).replace("```json", "").replace("```", "")
+            prediction_result = json.loads(prediction_data).get("result")
+            prediction_stake = json.loads(prediction_data).get("stake")
+            Prediction.objects.create(
+                ai_model=model,
+                match=match,
+                predicted_winner=prediction_result,
+                bet_amount=prediction_stake,
+                odds=odds_data.get(prediction_result, 1.5),
+            )
 
-        model.balance -= float(prediction_stake)
-        model.save()
+            model.balance -= float(prediction_stake)
+            model.save()
 
     return redirect('index')
 
