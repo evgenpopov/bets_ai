@@ -63,10 +63,15 @@ DATABASES = {
         'PASSWORD': os.getenv("DB_PASSWORD"),
         'HOST': os.getenv("DB_HOST"),
         'PORT': os.getenv("DB_PORT"),
-        'OPTIONS': {
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
     }
+}
+
+DATABASES = {
+    'default': dj_database_url.parse(
+        os.getenv("DB_URL"),
+        conn_max_age=600,
+        ssl_require=True
+    )
 }
 
 CELERY_BROKER_URL = os.getenv("REDIS_URL")
