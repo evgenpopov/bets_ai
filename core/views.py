@@ -70,8 +70,7 @@ def model_detail(request, slug):
     })
 
 def import_matches(request):
-    #tomorrow = datetime.now() + timedelta(days=1)
-    tomorrow = datetime.now()
+    tomorrow = datetime.now() + timedelta(days=1)
     matches = get_matches(tomorrow.strftime("%Y-%m-%d"))
 
     for fixture in matches:
@@ -162,7 +161,7 @@ def update_matches(request):
                     prediction.ai_model.balance -= prediction.bet_amount
                 else:
                     prediction.result = f"+{prediction.bet_amount}"
-                    prediction.ai_model.balance += prediction.bet_amount
+                    prediction.ai_model.balance += prediction.bet_amount * prediction.odds
                 prediction.save()
 
                 pending_bets = Prediction.objects.filter(

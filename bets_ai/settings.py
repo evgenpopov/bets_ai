@@ -57,7 +57,7 @@ WSGI_APPLICATION = 'bets_ai.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv("DJANGO_DB_ENGINE"),
+        'ENGINE': os.getenv("DB_ENGINE"),
         'NAME': os.getenv("DB_NAME"),
         'USER': os.getenv("DB_USER"),
         'PASSWORD': os.getenv("DB_PASSWORD"),
@@ -68,8 +68,6 @@ DATABASES = {
         },
     }
 }
-
-DATABASES['default'] = dj_database_url.parse(os.getenv("DB_URL"))
 
 AUTH_PASSWORD_VALIDATORS = [
     {
