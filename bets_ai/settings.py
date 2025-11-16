@@ -12,6 +12,10 @@ SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 DEBUG = os.getenv("DJANGO_DEBUG")
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.railway.app",
+]
+
 ALLOWED_HOSTS = [
     'betsai-production-4def.up.railway.app',
     'localhost',
