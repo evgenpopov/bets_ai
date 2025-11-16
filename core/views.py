@@ -66,10 +66,10 @@ def model_detail(request, slug):
     })
 
 def import_matches(request):
-    import_matches_and_predictions.delay()
+    import_matches_and_predictions.apply_async()
     return redirect('index')
 
 
 def update_matches(request):
-    update_matches_and_predictions.delay()
+    update_matches_and_predictions.apply_async()
     return redirect('index')
