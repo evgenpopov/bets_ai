@@ -1,5 +1,6 @@
 import os
 import requests
+from google import genai
 from openai import OpenAI
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
@@ -77,26 +78,33 @@ def create_matches_obj():
             )
 
 
+
 def get_model_prediction(data, model_name):
-    if model_name == "ChatGPT 4":
-        result = AIModels().openai(
-            system_prompt=SYSTEM_PROMPT.format(data.get("balance")),
-            user_prompt=USER_PROMPT.format(
-                data.get("balance"), data.get("home"), data.get("away"), data.get("date"),
-                data.get("home_last_results"), data.get("away_last_results"),
-                data.get("home_rate"), data.get("draw_rate"), data.get("away_rate")
-            )
-        )
-    else:
-        result = AIModels().perplexity(
-            system_prompt=SYSTEM_PROMPT.format(data.get("balance")),
-            user_prompt=USER_PROMPT.format(
-                data.get("balance"), data.get("home"), data.get("away"), data.get("date"),
-                data.get("home_last_results"), data.get("away_last_results"),
-                data.get("home_rate"), data.get("draw_rate"), data.get("away_rate")
-            )
-        )
-    return result
+    ai = AIModels()
+
+    system_prompt = SYSTEM_PROMPT.format(data.get("balance"))
+
+    user_prompt = USER_PROMPT.format(
+        data.get("balance"),
+        data.get("home"),
+        data.get("away"),
+        data.get("date"),
+        data.get("home_last_results"),
+        data.get("away_last_results"),
+        data.get("home_rate"),
+        data.get("draw_rate"),
+        data.get("away_rate")
+    )
+
+    model_dispatch = {
+        "ChatGPT 4": ai.openai,
+        "DeepSeek": ai.deepseek,
+        "Gemini": ai.gemini
+    }
+
+    model_func = model_dispatch.get(model_name, ai.deepseek)
+
+    return model_func(system_prompt=system_prompt, user_prompt=user_prompt)
 
 
 def get_match_odds(home, away):
@@ -143,46 +151,27 @@ class AIModels:
 
         return response
 
-    def anthropic(self, system_prompt, user_prompt):
-        headers = {
-            "x-api-key": os.getenv("ANTHROPIC_API_KEY"),
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json"
-        }
-        data = {
-            "model": "claude-3-7-sonnet-20250219",
-            "max_tokens": 250,
-            "temperature": 1,
-            "system": system_prompt,
-            "messages": [{"role": "user", "content": user_prompt}],
-        }
-        response = requests.post("https://api.anthropic.com/v1/messages", headers=headers, json=data)
+    def deepseek(self, system_prompt, user_prompt):
+        client = OpenAI(api_key=os.getenv("DEEPSEEK_API_KEY"), base_url="https://api.deepseek.com")
+        response = client.chat.completions.create(
+            model="deepseek-chat",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ]
+        ).choices[0].message.content
 
         return response
 
-    def perplexity(self, system_prompt, user_prompt):
-        payload = {
-            "model": "sonar",
-            "messages": [
-                {
-                    "role": "system",
-                    "content": system_prompt
-                },
-                {
-                    "role": "user",
-                    "content": user_prompt,
-                }
-            ]
-        }
-        headers = {
-            "accept": "application/json",
-            "content-type": "application/json",
-            "Authorization": f"Bearer {os.getenv("PPLX_API_KEY")}"
-        }
+    def gemini(self, system_prompt, user_prompt):
+        client = genai.Client(api_key=os.getenv("GENAI_KEY"))
 
-        response = requests.post("https://api.perplexity.ai/chat/completions", json=payload, headers=headers)
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=f"{system_prompt}/n{user_prompt}",
+        ).text
 
-        return response.json()["choices"][0]["message"]["content"]
+        return response
 
 
 SYSTEM_PROMPT = '''
