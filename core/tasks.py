@@ -99,9 +99,10 @@ def update_matches_and_predictions():
                     prediction.result = f"-{prediction.bet_amount}"
                     prediction.ai_model.balance -= prediction.bet_amount
                 else:
-                    prediction.result = f"+{prediction.bet_amount}"
+                    prediction.result = f"+{prediction.bet_amount * prediction.odds}"
                     prediction.ai_model.balance += prediction.bet_amount * prediction.odds
                 prediction.save()
+                prediction.ai_model.save()
 
                 pending_bets = Prediction.objects.filter(
                     ai_model=prediction.ai_model,
