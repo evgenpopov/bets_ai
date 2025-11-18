@@ -53,6 +53,9 @@ def import_matches_and_predictions():
                 "away_rate": odds_data.get(match.away, "None"),
             }
 
+            if Prediction.objects.filter(ai_model=model,match=match).exists():
+                continue
+
             prediction_data = get_model_prediction(data, model.name).replace("```json", "").replace("```", "")
             prediction_result = json.loads(prediction_data).get("result")
             prediction_stake = json.loads(prediction_data).get("stake")
