@@ -109,9 +109,9 @@ def get_model_prediction(data, model_name):
 
 def get_scraper_api_response(url, render_js=False):
     params = {
-        'api_key': os.getenv('SCRAPER_API_KEY'),
-        'url': url,
-        'render_js': render_js
+        "api_key": os.getenv("SCRAPER_API_KEY"),
+        "url": url,
+        "render_js": render_js
     }
 
     response = requests.get(url='https://proxy.scrapeops.io/v1/', params=params)
@@ -124,8 +124,8 @@ def get_scraper_api_response(url, render_js=False):
 def get_match_odds(home, away):
     result = {}
     response = requests.get("https://www.olbg.com/betting-tips/Football/1")
-    response = get_scraper_api_response(url="https://www.olbg.com/betting-tips/Football/1", render_js=True)
-    soup = BeautifulSoup(response, "html.parser")
+    #response = get_scraper_api_response(url="https://www.olbg.com/betting-tips/Football/1", render_js=True)
+    soup = BeautifulSoup(response.content, "html.parser")
     for match in soup.find_all("a"):
         event_name_block = match.find("h5")
         if event_name_block:
