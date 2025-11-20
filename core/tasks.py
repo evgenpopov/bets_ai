@@ -100,19 +100,14 @@ def update_matches_and_predictions():
             for prediction in match.predictions.all():
                 if prediction.predicted_winner != match.winner:
                     prediction.result = f"-{prediction.bet_amount}"
-                    prediction.ai_model.balance -= prediction.bet_amount
                 else:
                     prediction.result = f"+{prediction.bet_amount * prediction.odds}"
                     prediction.ai_model.balance += prediction.bet_amount * prediction.odds
                 prediction.save()
                 prediction.ai_model.save()
 
-                pending_bets = Prediction.objects.filter(
-                    ai_model=prediction.ai_model,
-                    result__isnull=True
-                ).aggregate(total=Sum("bet_amount"))["total"] or 0
-
-                BalanceHistory.objects.create(
-                    ai_model=prediction.ai_model,
-                    balance=prediction.ai_model.balance + pending_bets
-                )
+    for model in ModelAI.objects.all():
+        BalanceHistory.objects.create(
+            ai_model=model,
+            balance=model.balance
+        )
