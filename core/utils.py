@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from .models import Match
 
 load_dotenv()
-LEAGUES_LIST_ID = [140, 2, 3, 848, 333, 78, 32, 135, 39, 61]
+LEAGUES_LIST_ID = [140, 2, 3, 848, 78, 32, 135, 39, 61]
 
 
 def get_matches(date):
@@ -93,7 +93,11 @@ def get_model_prediction(data, model_name):
         data.get("away_last_results"),
         data.get("home_rate"),
         data.get("draw_rate"),
-        data.get("away_rate")
+        data.get("away_rate"),
+        data.get("over"),
+        data.get("under"),
+        data.get("yes"),
+        data.get("no"),
     )
 
     model_dispatch = {
@@ -121,10 +125,21 @@ def get_scraper_api_response(url, render_js=False):
     return None
 
 
-def get_match_odds(home, away):
+def get_match_odds(home, away, league_id):
+    LEAGUES_ODDS_MAP = {
+        '2': 'https://www.olbg.com/betting-tips/Football/UEFA_Competitions/Champions_League/1',
+        '3': 'https://www.olbg.com/betting-tips/Football/UEFA_Competitions/Europa_League/1',
+        '32': 'https://www.olbg.com/betting-tips/Football/International/World_Cup_Finals/1',
+        '39': 'https://www.olbg.com/betting-tips/Football/UK/England_Premier_League/1',
+        '61': 'https://www.olbg.com/betting-tips/Football/European_Competitions/France_Ligue_1/1',
+        '78': 'https://www.olbg.com/betting-tips/Football/European_Competitions/Germany_Bundesliga_I/1',
+        '135': 'https://www.olbg.com/betting-tips/Football/European_Competitions/Italy_Serie_A/1',
+        '140': 'https://www.olbg.com/betting-tips/Football/European_Competitions/Spain_Primera_Liga/1',
+        '848': 'https://www.olbg.com/betting-tips/Football/UEFA_Competitions/UEFA_Europa_Conference_League/1',
+    }
+
     result = {}
-    response = requests.get("https://www.olbg.com/betting-tips/Football/1")
-    #response = get_scraper_api_response(url="https://www.olbg.com/betting-tips/Football/1", render_js=True)
+    response = requests.get(LEAGUES_ODDS_MAP[str(league_id)])
     soup = BeautifulSoup(response.content, "html.parser")
     for match in soup.find_all("a"):
         event_name_block = match.find("h5")
@@ -133,18 +148,18 @@ def get_match_odds(home, away):
             if home in event_name or away in event_name:
                 response = requests.get(match.get("href"))
                 soup = BeautifulSoup(response.content, "html.parser")
-                main_block = soup.find("div", {"class": "expanded"})
-                odds_category = main_block.find_all("a")
-                for section in odds_category:
-                    title_section = section.find("h4")
-                    if not title_section:
-                        continue
-                    title = title_section.text.strip()
-                    if any(title == t for t in [home, away, "Draw"]):
-                        result[title_section.text.strip()] = section.find(
-                            "span", {"class": "ui-odds"}
-                        ).get("data-decimal")
-                break
+                main_block = soup.find_all("div", {"class": "expanded"})[:3]
+                for block in main_block:
+                    odds_category = block.find_all("a")
+                    for section in odds_category:
+                        title_section = section.find("h4")
+                        if not title_section:
+                            continue
+                        title = title_section.text.strip()
+                        if any(title == t for t in [home, away, "Draw", "Over 2.50", "Under 2.50", "Yes", "No"]):
+                            result[title_section.text.strip()] = section.find(
+                                "span", {"class": "ui-odds"}
+                            ).get("data-decimal")
     return result
 
 
@@ -217,18 +232,29 @@ USER_PROMPT = '''
      - Win {1}: {6}
      - Draw: {7}
      - Win {2}: {8}
+     - Over 2.5 Goals: {9}
+     - Under 2.5 Goals: {10}
+     - BTTS Yes: {11}
+     - BTTS No: {12}
     Your Task:
      - Analyze the matchup using the odds, team form, and home advantage.
-     - Decide the most likely outcome (home win, draw, away win).
+     - Decide the most likely outcome among:
+          - "{1}" (home win)
+          - "{2}" (away win)
+          - "Draw"
+          - "Over 2.5"
+          - "Under 2.5"
+          - "BTTS Yes"
+          - "BTTS No"
      - Calculate the optimal stake amount (max 15% of ${0}).
     Output strictly in this JSON format:
-          "result": "{1}",  // or "{2}" or "Draw"
-          "stake": 30       // numeric value in dollars
+          "result": "Over 2.5",   // or "{1}", "{2}", "Draw", "Under 2.5", "BTTS Yes", "BTTS No"
+          "stake": 30             // numeric value in dollars
     Constraints:
      - Only return JSON, no additional explanation.
      - Use probability analysis and risk management to determine both outcome and stake.
      - Prioritize risk management and probability analysis in your decision.
-     - Return ONLY valid JSON string using double quotes ("), as per JSON specification. 
+     - Return ONLY valid JSON string using double quotes ("), as per JSON specification.
      - Do NOT use single quotes under any circumstances.
      - *** Do NOT use ```json, just clean dict with double quotes. ***
      - *** NEVER use single quotes (') — output MUST be valid JSON. ***

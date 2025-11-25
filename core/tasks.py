@@ -40,7 +40,7 @@ def import_matches_and_predictions():
 
     for model in models:
         for match in matches:
-            odds_data = get_match_odds(match.home, match.away)
+            odds_data = get_match_odds(match.home, match.away, match.metadata['league']['id'])
             if not odds_data:
                 continue
             data = {
@@ -51,9 +51,13 @@ def import_matches_and_predictions():
                 "home_rate": odds_data.get(match.home, "None"),
                 "draw_rate": odds_data.get("Draw", "None"),
                 "away_rate": odds_data.get(match.away, "None"),
+                "over": odds_data.get("Over 2.50", "None"),
+                "under": odds_data.get("Under 2.50", "None"),
+                "yes": odds_data.get("Yes", "None"),
+                "no": odds_data.get("No", "None"),
             }
 
-            if Prediction.objects.filter(ai_model=model,match=match).exists():
+            if Prediction.objects.filter(ai_model=model, match=match).exists():
                 continue
 
             prediction_data = get_model_prediction(data, model.name).replace("```json", "").replace("```", "")

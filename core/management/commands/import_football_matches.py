@@ -9,7 +9,6 @@ from core.utils import get_matches, get_match_odds, get_team_stats, get_model_pr
 class Command(BaseCommand):
     # every day at 08:00
     def handle(self, *args, **options):
-        # IMPORT MATCHES #
         tomorrow = datetime.now() + timedelta(days=1)
         matches = get_matches(tomorrow.strftime("%Y-%m-%d"))
 
@@ -35,12 +34,11 @@ class Command(BaseCommand):
                     }
                 )
 
-        # CREATE PREDICTIONS #
         matches = Match.objects.filter(winner__isnull=True)
-        model = ModelAI.objects.get(name="ChatGPT 4")  # make qs of all models
+        model = ModelAI.objects.all()
 
         for match in matches:
-            odds_data = get_match_odds(match.home, match.away)
+            odds_data = get_match_odds(match.home, match.awa, match.metadata['league']['id'])
             if not odds_data:
                 continue
             data = {
@@ -51,11 +49,15 @@ class Command(BaseCommand):
                 "home_rate": odds_data.get(match.home, "None"),
                 "draw_rate": odds_data.get("Draw", "None"),
                 "away_rate": odds_data.get(match.away, "None"),
+                "over": odds_data.get("Over 2.50", "None"),
+                "under": odds_data.get("Under 2.50", "None"),
+                "yes": odds_data.get("Yes", "None"),
+                "no": odds_data.get("No", "None"),
             }
 
-            prediction_data = json.loads(get_model_prediction(data))
-            prediction_result = prediction_data.get("result")
-            prediction_stake = prediction_data.get("stake")
+            prediction_data = get_model_prediction(data, model.name).replace("```json", "").replace("```", "")
+            prediction_result = json.loads(prediction_data).get("result")
+            prediction_stake = json.loads(prediction_data).get("stake")
             Prediction.objects.create(
                 ai_model=model,
                 match=match,
