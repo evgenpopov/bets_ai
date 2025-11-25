@@ -10,7 +10,7 @@ from .utils import (get_model_prediction, get_match_odds, get_team_stats, LEAGUE
 
 @shared_task
 def import_matches_and_predictions():
-    tomorrow = datetime.now() + timedelta(days=1)
+    tomorrow = datetime.now()
     matches = get_matches(tomorrow.strftime("%Y-%m-%d"))
 
     for fixture in matches:
@@ -68,7 +68,7 @@ def import_matches_and_predictions():
                 match=match,
                 predicted_winner=prediction_result,
                 bet_amount=prediction_stake,
-                odds=odds_data.get(prediction_result, 1.5),
+                odds=odds_data.get(prediction_result.replace(" Goals", "").replace("BTTS ", ""), 1.5),
             )
 
             model.balance -= float(prediction_stake)

@@ -23,7 +23,7 @@ def index(request):
     else:
         completed_bets = []
 
-    upcoming = Prediction.objects.filter(result__isnull=True, match__date__gt=datetime.datetime.now().date())
+    upcoming = Prediction.objects.filter(result__isnull=True, match__date__gte=datetime.datetime.now().date())
     if upcoming.exists():
         next_day = upcoming.order_by('match__date').first().match.date
         upcoming_bets = upcoming.filter(match__date=next_day).order_by('match__date')

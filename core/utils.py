@@ -242,13 +242,13 @@ USER_PROMPT = '''
           - "{1}" (home win)
           - "{2}" (away win)
           - "Draw"
-          - "Over 2.5"
-          - "Under 2.5"
+          - "Over 2.5 Goals"
+          - "Under 2.5 Goals"
           - "BTTS Yes"
           - "BTTS No"
      - Calculate the optimal stake amount (max 15% of ${0}).
     Output strictly in this JSON format:
-          "result": "Over 2.5",   // or "{1}", "{2}", "Draw", "Under 2.5", "BTTS Yes", "BTTS No"
+          "result": "Over 2.5 Goals",   // or "{1}", "{2}", "Draw", "Under 2.5 Goals", "BTTS Yes", "BTTS No"
           "stake": 30             // numeric value in dollars
     Constraints:
      - Only return JSON, no additional explanation.
