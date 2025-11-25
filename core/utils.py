@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 from .models import Match
 
 load_dotenv()
-LEAGUES_LIST_ID = [140, 2, 3, 848, 333, 78, 32]
+LEAGUES_LIST_ID = [140, 2, 3, 848, 333, 78, 32, 135, 39, 61]
 
 
 def get_matches(date):
