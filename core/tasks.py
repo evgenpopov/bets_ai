@@ -10,7 +10,7 @@ from .utils import (get_model_prediction, get_match_odds, get_team_stats, LEAGUE
 
 @shared_task
 def import_matches_and_predictions():
-    tomorrow = datetime.now()
+    tomorrow = datetime.now() + timedelta(days=1)
     matches = get_matches(tomorrow.strftime("%Y-%m-%d"))
 
     for fixture in matches:
@@ -102,11 +102,36 @@ def update_matches_and_predictions():
             match.save()
 
             for prediction in match.predictions.all():
-                if prediction.predicted_winner != match.winner:
-                    prediction.result = f"-{prediction.bet_amount}"
-                else:
+                if prediction.predicted_winner == "Over 2.5 Goals":
+                    if (score_home + score_away) > 2:
+                        prediction.result = f"+{prediction.bet_amount * prediction.odds}"
+                        prediction.ai_model.balance += prediction.bet_amount * prediction.odds
+                    else:
+                        prediction.result = f"-{prediction.bet_amount}"
+                elif prediction.predicted_winner == "Under 2.5 Goals":
+                    if (score_home + score_away) < 3:
+                        prediction.result = f"+{prediction.bet_amount * prediction.odds}"
+                        prediction.ai_model.balance += prediction.bet_amount * prediction.odds
+                    else:
+                        prediction.result = f"-{prediction.bet_amount}"
+                elif prediction.predicted_winner == "BTTS Yes":
+                    if score_home and score_away:
+                        prediction.result = f"+{prediction.bet_amount * prediction.odds}"
+                        prediction.ai_model.balance += prediction.bet_amount * prediction.odds
+                    else:
+                        prediction.result = f"-{prediction.bet_amount}"
+                elif prediction.predicted_winner == "BTTS No":
+                    if not score_home or not score_away:
+                        prediction.result = f"+{prediction.bet_amount * prediction.odds}"
+                        prediction.ai_model.balance += prediction.bet_amount * prediction.odds
+                    else:
+                        prediction.result = f"-{prediction.bet_amount}"
+                elif prediction.predicted_winner == match.winner:
                     prediction.result = f"+{prediction.bet_amount * prediction.odds}"
                     prediction.ai_model.balance += prediction.bet_amount * prediction.odds
+                else:
+                    prediction.result = f"-{prediction.bet_amount}"
+
                 prediction.save()
                 prediction.ai_model.save()
 
