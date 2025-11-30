@@ -10,7 +10,7 @@ from .utils import (get_model_prediction, get_match_odds, get_team_stats, LEAGUE
 
 @shared_task
 def import_matches_and_predictions():
-    tomorrow = datetime.now() + timedelta(days=1)
+    tomorrow = datetime.now()
     matches = get_matches(tomorrow.strftime("%Y-%m-%d"))
 
     for fixture in matches:

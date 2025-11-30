@@ -1,7 +1,12 @@
 import os
 import requests
+
+import anthropic
 from google import genai
 from openai import OpenAI
+from xai_sdk import Client
+from xai_sdk.chat import user, system
+
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
@@ -200,6 +205,35 @@ class AIModels:
             model="gemini-2.5-flash",
             contents=f"{system_prompt}/n{user_prompt}",
         ).text
+
+        return response
+
+    def grok(self, system_prompt, user_prompt):
+        client = Client(
+            api_key=os.getenv("GROK_API_KEY"),
+            timeout=3600,
+        )
+        chat = client.chat.create(model="grok-4")
+        chat.append(system(system_prompt))
+        chat.append(user(user_prompt))
+        response = chat.sample()
+
+        return response.content
+
+    def anthropic(self, system_prompt, user_prompt):
+        headers = {
+            "x-api-key": os.getenv("ANTHROPIC_API_KEY"),
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json"
+        }
+        data = {
+            "model": "claude-sonnet-4-5-20250929",
+            "max_tokens": 250,
+            "temperature": 1,
+            "system": system_prompt,
+            "messages": [{"role": "user", "content": user_prompt}],
+        }
+        response = requests.post("https://api.anthropic.com/v1/messages", headers=headers, json=data)
 
         return response
 
