@@ -9,7 +9,7 @@ from core.utils import get_matches, get_match_odds, get_team_stats, get_model_pr
 class Command(BaseCommand):
     # every day at 08:00
     def handle(self, *args, **options):
-        tomorrow = datetime.now() + timedelta(days=1)
+        tomorrow = datetime.now()
         matches = get_matches(tomorrow.strftime("%Y-%m-%d"))
 
         for fixture in matches:
@@ -35,36 +35,40 @@ class Command(BaseCommand):
                 )
 
         matches = Match.objects.filter(winner__isnull=True)
-        model = ModelAI.objects.all()
+        models = ModelAI.objects.all()
 
-        for match in matches:
-            odds_data = get_match_odds(match.home, match.awa, match.metadata['league']['id'])
-            if not odds_data:
-                continue
-            data = {
-                "balance": model.balance, "home": match.home, "away": match.away,
-                "date": match.date.strftime("%Y-%m-%d"),
-                "home_last_results": match.metadata_home[:3] if match.metadata_home else "",
-                "away_last_results": match.metadata_away[:3] if match.metadata_away else "",
-                "home_rate": odds_data.get(match.home, "None"),
-                "draw_rate": odds_data.get("Draw", "None"),
-                "away_rate": odds_data.get(match.away, "None"),
-                "over": odds_data.get("Over 2.50", "None"),
-                "under": odds_data.get("Under 2.50", "None"),
-                "yes": odds_data.get("Yes", "None"),
-                "no": odds_data.get("No", "None"),
-            }
+        for model in models:
+            for match in matches:
+                odds_data = get_match_odds(match.home, match.away, match.metadata['league']['id'])
+                if not odds_data:
+                    continue
+                data = {
+                    "balance": model.balance, "home": match.home, "away": match.away,
+                    "date": match.date.strftime("%Y-%m-%d"),
+                    "home_last_results": match.metadata_home[:3] if match.metadata_home else "",
+                    "away_last_results": match.metadata_away[:3] if match.metadata_away else "",
+                    "home_rate": odds_data.get(match.home, "None"),
+                    "draw_rate": odds_data.get("Draw", "None"),
+                    "away_rate": odds_data.get(match.away, "None"),
+                    "over": odds_data.get("Over 2.50", "None"),
+                    "under": odds_data.get("Under 2.50", "None"),
+                    "yes": odds_data.get("Yes", "None"),
+                    "no": odds_data.get("No", "None"),
+                }
 
-            prediction_data = get_model_prediction(data, model.name).replace("```json", "").replace("```", "")
-            prediction_result = json.loads(prediction_data).get("result")
-            prediction_stake = json.loads(prediction_data).get("stake")
-            Prediction.objects.create(
-                ai_model=model,
-                match=match,
-                predicted_winner=prediction_result,
-                bet_amount=prediction_stake,
-                odds=odds_data.get(prediction_result, 1.5),
-            )
+                if Prediction.objects.filter(ai_model=model, match=match).exists():
+                    continue
 
-            model.balance -= float(prediction_stake)
-            model.save()
+                prediction_data = get_model_prediction(data, model.name).replace("```json", "").replace("```", "")
+                prediction_result = json.loads(prediction_data).get("result")
+                prediction_stake = json.loads(prediction_data).get("stake")
+                Prediction.objects.create(
+                    ai_model=model,
+                    match=match,
+                    predicted_winner=prediction_result,
+                    bet_amount=prediction_stake,
+                    odds=odds_data.get(prediction_result.replace(" Goals", "").replace("BTTS ", ""), 1.5),
+                )
+
+                model.balance -= float(prediction_stake)
+                model.save()

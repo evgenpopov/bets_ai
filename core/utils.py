@@ -108,7 +108,9 @@ def get_model_prediction(data, model_name):
     model_dispatch = {
         "ChatGPT 4": ai.openai,
         "DeepSeek": ai.deepseek,
-        "Gemini": ai.gemini
+        "Gemini": ai.gemini,
+        "GROK 4": ai.grok,
+        "Claude Sonnet 4.5": ai.anthropic,
     }
 
     model_func = model_dispatch.get(model_name, ai.deepseek)
