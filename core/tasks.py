@@ -60,7 +60,10 @@ def import_matches_and_predictions():
             if Prediction.objects.filter(ai_model=model, match=match).exists():
                 continue
 
-            prediction_data = get_model_prediction(data, model.name).replace("```json", "").replace("```", "")
+            try:
+                prediction_data = get_model_prediction(data, model.name).replace("```json", "").replace("```", "")
+            except:
+                continue
             prediction_result = json.loads(prediction_data).get("result")
             prediction_stake = json.loads(prediction_data).get("stake")
             Prediction.objects.create(

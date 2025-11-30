@@ -237,7 +237,7 @@ class AIModels:
         }
         response = requests.post("https://api.anthropic.com/v1/messages", headers=headers, json=data)
 
-        return response
+        return response.json()["content"][0]["text"]
 
 
 SYSTEM_PROMPT = '''
