@@ -39,7 +39,7 @@ def import_matches_and_predictions():
     models = ModelAI.objects.all()
 
     for model in models:
-        for match in matches:
+        for match_num, match in enumerate(matches):
             odds_data = get_match_odds(match.home, match.away, match.metadata['league']['id'])
             if not odds_data:
                 continue
@@ -61,7 +61,9 @@ def import_matches_and_predictions():
                 continue
 
             try:
-                prediction_data = get_model_prediction(data, model.name).replace("```json", "").replace("```", "")
+                prediction_data = get_model_prediction(
+                    data, model.name, matches.count(), match_num
+                ).replace("```json", "").replace("```", "")
             except:
                 continue
             prediction_result = json.loads(prediction_data).get("result")

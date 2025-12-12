@@ -1,7 +1,8 @@
 import os
 import requests
+from celery.worker.state import total_count
 
-import anthropic
+from django.db.models import Sum
 from google import genai
 from openai import OpenAI
 from xai_sdk import Client
@@ -11,7 +12,7 @@ from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 
-from .models import Match
+from .models import Match, Prediction, ModelAI
 
 load_dotenv()
 LEAGUES_LIST_ID = [140, 2, 3, 848, 78, 32, 135, 39, 61]
@@ -84,10 +85,17 @@ def create_matches_obj():
 
 
 
-def get_model_prediction(data, model_name):
+def get_model_prediction(data, model_name, event_count, event_num):
     ai = AIModels()
 
     system_prompt = SYSTEM_PROMPT.format(data.get("balance"))
+
+    model = ModelAI.objects.get(name=model_name)
+    pending_bets = Prediction.objects.filter(
+        ai_model=model,
+        result__isnull=True
+    ).aggregate(total=Sum("bet_amount"))["total"] or 0
+    total_balance = model.balance + pending_bets
 
     user_prompt = USER_PROMPT.format(
         data.get("balance"),
@@ -103,6 +111,10 @@ def get_model_prediction(data, model_name):
         data.get("under"),
         data.get("yes"),
         data.get("no"),
+        event_count,
+        event_num,
+        total_balance,
+        pending_bets,
     )
 
     model_dispatch = {
@@ -248,7 +260,11 @@ SYSTEM_PROMPT = '''
 
 USER_PROMPT = '''
     Rules:
-     - Never bet more than 15% of your total budget on a single outcome.
+     - Never allocate more than 50% of your total budget across all events combined using this data:
+      Count of events - {13}.
+      Current event number - {14}.
+      Total balance - {15}.
+      Balance already in bets - {16}.
      - Use only the provided data: match info, historical results, and betting odds.
     Consider:
      - Home advantage
@@ -282,9 +298,9 @@ USER_PROMPT = '''
           - "Under 2.5 Goals"
           - "BTTS Yes"
           - "BTTS No"
-     - Calculate the optimal stake amount (max 15% of ${0}).
+     - Calculate the optimal stake amount.
     Output strictly in this JSON format:
-          "result": "Over 2.5 Goals",   // or "{1}", "{2}", "Draw", "Under 2.5 Goals", "BTTS Yes", "BTTS No"
+          "result": "{1}",   // or "{2}", "Draw", "Over 2.5 Goals", "Under 2.5 Goals", "BTTS Yes", "BTTS No"
           "stake": 30             // numeric value in dollars
     Constraints:
      - Only return JSON, no additional explanation.
