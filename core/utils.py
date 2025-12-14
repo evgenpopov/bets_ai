@@ -311,5 +311,6 @@ USER_PROMPT = '''
      - Do NOT use single quotes under any circumstances.
      - *** Do NOT use ```json, just clean dict with double quotes. ***
      - *** NEVER use single quotes (') — output MUST be valid JSON. ***
+     - *** Total sum of bets cannot be more than 50% of your total budget ***
      - The output must be a valid JSON dictionary — not a Python dict.
 '''
