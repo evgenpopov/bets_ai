@@ -17,9 +17,12 @@ click==8.3.0
 click-didyoumean==0.3.1
 click-plugins==1.1.1.2
 click-repl==0.3.0
+cron_descriptor==2.0.6
 distro==1.9.0
 dj-database-url==3.0.1
 Django==5.2.7
+django-celery-beat==2.8.1
+django-timezone-field==7.2.1
 docstring_parser==0.17.0
 dotenv==0.9.9
 frozenlist==1.8.0
@@ -49,6 +52,7 @@ pyasn1_modules==0.4.2
 pydantic==2.12.4
 pydantic_core==2.41.5
 PyMySQL==1.1.2
+python-crontab==3.3.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.1
 redis==7.0.1
