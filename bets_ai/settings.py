@@ -33,6 +33,8 @@ INSTALLED_APPS = [
     'core',
 ]
 
+INSTALLED_APPS += ["django_celery_beat"]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
