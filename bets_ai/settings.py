@@ -14,7 +14,7 @@ DEBUG = os.getenv("DJANGO_DEBUG")
 
 CSRF_TRUSTED_ORIGINS = [
     "https://*.railway.app",
-    "aibetbattle.com",
+    "https://aibetbattle.com",
 ]
 
 ALLOWED_HOSTS = [
