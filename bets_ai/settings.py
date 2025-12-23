@@ -14,10 +14,12 @@ DEBUG = os.getenv("DJANGO_DEBUG")
 
 CSRF_TRUSTED_ORIGINS = [
     "https://*.railway.app",
+    "aibetbattle.com",
 ]
 
 ALLOWED_HOSTS = [
     'betsai-production-4def.up.railway.app',
+    'aibetbattle.com',
     'localhost',
     '127.0.0.1',
 ]
