@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'core',
 ]
 
-INSTALLED_APPS += ["django_celery_beat"]
+INSTALLED_APPS += ["django_celery_beat", "whitenoise.runserver_nostatic"]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -45,6 +45,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'bets_ai.urls'
@@ -93,6 +94,7 @@ CELERY_TASK_ALWAYS_EAGER = os.getenv("DJANGO_DEBUG")
 
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
 AUTH_PASSWORD_VALIDATORS = [
