@@ -77,11 +77,13 @@ def index(request):
     history_data = {}
     for h in history:
         history_data.setdefault(h.ai_model.name, []).append({
-            "date": h.date.strftime("%Y-%m-%d %H:%M"),
+            "date": h.date.replace(hour=1).replace(minute=0).strftime("%Y-%m-%d %H:%M"),
             "balance": float(h.balance)
         })
 
     history_json = json.dumps(history_data)
+
+    last_update = BalanceHistory.objects.last().date.replace(hour=1).replace(minute=0).replace(second=0)
 
     return render(request, "core/index.html", {
         "request": request,
@@ -91,6 +93,7 @@ def index(request):
         "upcoming_bets": upcoming_bets,
         "balance_history": history,
         "history_data": history_json,
+        "last_update": last_update,
     })
 
 

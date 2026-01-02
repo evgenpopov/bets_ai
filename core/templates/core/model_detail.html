@@ -1,156 +1,276 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>{{ model.name }} - Bets</title>
-    <style>
-        body {
-          background-color: #0d0f14;
-          color: #e5e7eb;
-          font-family: 'Inter', sans-serif;
-          margin: 0;
-          padding: 20px;
-        }
+<meta charset="UTF-8">
+<title>{{ model.name }} – AI Model</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        .container {
-          max-width: 1000px;
-          margin: auto;
-        }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-        header {
-          display: flex;
-          align-items: center;
-          gap: 20px;
-          margin-bottom: 30px;
-        }
+<style>
+:root {
+  --bg-main:#0b0e14;
+  --bg-card:rgba(17,20,27,.85);
+  --bg-hover:rgba(24,28,40,.95);
+  --border-soft:rgba(255,255,255,.06);
 
-        .home-button {
-          display: inline-block;
-          background-color: #3B82F6;
-          color: white;
-          padding: 8px 16px;
-          border-radius: 6px;
-          font-size: 0.95rem;
-          text-decoration: none;
-          transition: 0.2s;
-        }
+  --text-main:#e5e7eb;
+  --text-muted:#9ca3af;
 
-        .home-button:hover {
-          background-color: #2563eb;
-        }
+  --blue:#3b82f6;
+  --green:#10b981;
+  --red:#ef4444;
+  --purple:#8b5cf6;
+}
 
-        h1 {
-          font-size: 2rem;
-          margin: 0;
-          color: #f3f4f6;
-        }
+* { box-sizing:border-box; }
 
-        .balance {
-          font-size: 1.3rem;
-          color: #60a5fa;
-          margin-bottom: 20px;
-        }
+body {
+  margin:0;
+  font-family:'Inter',system-ui,sans-serif;
+  background:
+    radial-gradient(1200px 500px at 50% -200px, rgba(59,130,246,.15), transparent),
+    var(--bg-main);
+  color:var(--text-main);
+  padding:40px 16px;
+}
 
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-top: 20px;
-          background: #11141b;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-          border-radius: 8px;
-          overflow: hidden;
-        }
+.container {
+  max-width:1100px;
+  margin:auto;
+}
 
-        th, td {
-          padding: 12px 15px;
-          text-align: left;
-        }
+a { color:var(--blue); text-decoration:none; }
+a:hover { text-decoration:underline; }
 
-        th {
-          background-color: #1a1d24;
-          font-weight: 600;
-          color: #d1d5db;
-        }
+/* ===== HEADER ===== */
+.header {
+  display:flex;
+  align-items:center;
+  gap:16px;
+  margin-bottom:30px;
+}
 
-        tr:nth-child(even) {
-          background-color: #171a21;
-        }
+.back {
+  padding:8px 14px;
+  border-radius:10px;
+  background:rgba(59,130,246,.15);
+  color:var(--blue);
+  font-weight:600;
+  font-size:.9rem;
+}
 
-        tr:hover {
-          background-color: #1f242f;
-        }
+/* ===== MODEL CARD ===== */
+.model-card {
+  background:var(--bg-card);
+  backdrop-filter:blur(10px);
+  border:1px solid var(--border-soft);
+  border-radius:20px;
+  padding:22px;
+  margin-bottom:30px;
+}
 
-        a {
-          color: #60a5fa;
-          text-decoration: none;
-        }
+.model-title {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:1.4rem;
+  font-weight:700;
+}
 
-        a:hover {
-          text-decoration: underline;
-        }
+.verified {
+  font-size:.7rem;
+  padding:3px 8px;
+  border-radius:8px;
+  background:rgba(16,185,129,.15);
+  color:var(--green);
+  font-weight:600;
+}
 
-        .no-data {
-          text-align: center;
-          color: #9ca3af;
-          padding: 20px;
-        }
+.balance {
+  margin-top:12px;
+  font-size:1.6rem;
+  font-weight:700;
+}
 
-        td.positive {
-            background-color: #064e3b;
-            color: #a7f3d0;
-        }
+.pending {
+  font-size:.85rem;
+  color:var(--text-muted);
+  margin-top:4px;
+}
 
-        td.negative {
-            background-color: #7f1d1d;
-            color: #fecaca;
-        }
-    </style>
+/* ===== STATS ===== */
+.stats {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+  gap:12px;
+  margin-top:18px;
+}
+
+.stat {
+  background:rgba(255,255,255,.03);
+  border-radius:14px;
+  padding:12px;
+  text-align:center;
+}
+
+.stat span {
+  display:block;
+  font-size:.7rem;
+  color:var(--text-muted);
+}
+
+.stat strong {
+  font-size:1rem;
+  font-weight:700;
+}
+
+.positive { color:var(--green); }
+.negative { color:var(--red); }
+
+/* ===== TRUST ===== */
+.trust-bar {
+  display:flex;
+  gap:18px;
+  flex-wrap:wrap;
+  margin-top:18px;
+  font-size:.8rem;
+  color:var(--text-muted);
+}
+
+.trust-bar div {
+  background:rgba(255,255,255,.03);
+  padding:6px 14px;
+  border-radius:20px;
+}
+
+/* ===== TABLE ===== */
+.section-title {
+  margin:40px 0 16px;
+  font-size:1.2rem;
+  font-weight:700;
+}
+
+.table-wrap {
+  overflow-x:auto;
+}
+
+table {
+  width:100%;
+  border-collapse:collapse;
+  background:var(--bg-card);
+  border:1px solid var(--border-soft);
+  border-radius:16px;
+}
+
+th,td {
+  padding:12px 14px;
+  white-space:nowrap;
+}
+
+th {
+  font-size:.75rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--text-muted);
+  background:rgba(255,255,255,.03);
+}
+
+tr:nth-child(even) {
+  background:rgba(255,255,255,.02);
+}
+
+.no-data {
+  text-align:center;
+  padding:30px;
+  color:var(--text-muted);
+}
+
+/* ===== MOBILE ===== */
+@media (max-width:768px) {
+  body { padding:24px 12px; }
+  .model-title { font-size:1.2rem; }
+  .balance { font-size:1.4rem; }
+}
+</style>
 </head>
+
 <body>
 <div class="container">
 
-    <header>
-        <a href="{% url 'index' %}" class="home-button">Dashboard</a>
-        <h1>{{ model.name }}</h1>
-    </header>
+<div class="header">
+  <a href="{% url 'index' %}" class="back">← Dashboard</a>
+</div>
 
-    <div class="balance">
-        Balance: ${{ display_balance|floatformat:2 }}
-        <small>(${{ pending_bets|floatformat:2 }} in bets)</small>
+<div class="model-card">
+  <div class="model-title">
+    {{ model.name }}
+    {% if model.is_verified %}
+      <span class="verified">✔ Verified AI</span>
+    {% endif %}
+  </div>
+
+  <div class="balance">${{ display_balance|floatformat:2 }}</div>
+  <div class="pending">Pending bets: ${{ pending_bets|floatformat:2 }}</div>
+
+  <div class="stats">
+    <div class="stat">
+      <span>ROI</span>
+      <strong class="{% if model.roi >= 0 %}positive{% else %}negative{% endif %}">
+        {{ model.roi|floatformat:1 }}%
+      </strong>
     </div>
+    <div class="stat">
+      <span>Winrate</span>
+      <strong>{{ model.winrate|floatformat:0 }}%</strong>
+    </div>
+  </div>
 
-    <table>
-        <thead>
-        <tr>
-            <th>Date</th>
-            <th>Match</th>
-            <th>Bet</th>
-            <th>Bet Amount</th>
-            <th>Rate</th>
-            <th>Result</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for p in predictions %}
-        <tr>
-            <td>{{ p.match.date|date:"(D) d.m.Y" }}</td>
-            <td>{{ p.match.home }} vs {{ p.match.away }}</td>
-            <td>{{ p.predicted_winner }}</td>
-            <td>{{ p.bet_amount|floatformat:0 }}$</td>
-            <td>{{ p.odds|floatformat:2 }}</td>
-            <td {% if p.result is not None %}{% if p.result < 0 %}class="negative"{% elif p.result > 0 %}class="positive"{% endif %}{% endif %}>
-                {% if p.result is not None %}
-                    {{ p.result|floatformat:0 }}$
-                {% endif %}
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="6" class="no-data">No predictions yet</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+  <div class="trust-bar">
+    <div>✔ All bets are real</div>
+    <div>✔ No manual edits</div>
+    <div>🤖 Runs autonomously</div>
+  </div>
+</div>
+
+<div class="section-title">Bets History</div>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+  <th>Date</th>
+  <th>Match</th>
+  <th>Bet</th>
+  <th>Amount</th>
+  <th>Rate</th>
+  <th>Result</th>
+</tr>
+</thead>
+<tbody>
+{% for p in predictions %}
+<tr>
+  <td>{{ p.match.date|date:"d.m.Y" }}</td>
+  <td>{{ p.match.home }} – {{ p.match.away }}</td>
+  <td>{{ p.predicted_winner }}</td>
+  <td>{{ p.bet_amount|floatformat:0 }}$</td>
+  <td>{{ p.odds|floatformat:2 }}</td>
+  <td class="{% if p.result > 0 %}positive{% elif p.result < 0 %}negative{% endif %}">
+    {% if p.result is not None %}
+      {{ p.result|floatformat:0 }}$
+    {% endif %}
+  </td>
+</tr>
+{% empty %}
+<tr>
+  <td colspan="6" class="no-data">No predictions yet</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+
 </div>
 </body>
 </html>

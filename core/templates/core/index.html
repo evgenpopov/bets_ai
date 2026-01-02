@@ -1,303 +1,103 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Bets AI Dashboard</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body {
-          font-family: 'Inter', sans-serif;
-          background: #0d0f14;
-          color: #e5e7eb;
-          margin: 0;
-          padding: 40px 20px;
-        }
-
-        .container {
-          max-width: 1000px;
-          margin: auto;
-        }
-
-        a {
-          color: #60a5fa;
-          text-decoration: none;
-        }
-
-        a:hover {
-          text-decoration: underline;
-        }
-
-        h1, h3 {
-          text-align: center;
-          color: #f3f4f6;
-          margin-bottom: 20px;
-        }
-
-        h1 { font-size: 2rem; }
-        h3 { font-size: 1.4rem; margin-top: 40px; }
-
-        button {
-          background: #3B82F6;
-          color: white;
-          border: none;
-          padding: 10px 20px;
-          border-radius: 6px;
-          font-size: 16px;
-          cursor: pointer;
-          transition: 0.2s;
-        }
-
-        button:hover { background: #2563eb; }
-
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-top: 10px;
-          background: #11141b;
-          border-radius: 8px;
-          overflow: hidden;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-        }
-
-        th, td { padding: 12px 15px; text-align: left; }
-        th {
-          background-color: #1a1d24;
-          font-weight: 600;
-          color: #d1d5db;
-        }
-
-        tr:nth-child(even) { background-color: #171a21; }
-        tr:hover { background-color: #1f242f; }
-
-        hr {
-          border: none;
-          border-top: 1px solid #374151;
-          margin: 40px 0;
-        }
-
-        canvas {
-          background: #11141b;
-          border-radius: 8px;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-          padding: 10px;
-          margin-bottom: 20px;
-        }
-
-        .model-balances {
-          display: flex;
-          justify-content: center;
-          flex-wrap: wrap;
-          gap: 20px;
-          margin-bottom: 30px;
-        }
-
-        .model-balance {
-          background: #11141b;
-          border-radius: 8px;
-          box-shadow: 0 2px 6px rgba(0,0,0,0.4);
-          padding: 12px 18px;
-          text-align: center;
-          min-width: 150px;
-        }
-
-        .model-balance a {
-          color: #60a5fa;
-          font-weight: 600;
-          text-decoration: none;
-        }
-
-        .model-balance span {
-          display: block;
-          font-size: 1.1rem;
-          color: #e5e7eb;
-          margin-top: 6px;
-        }
-
-        td.positive {
-            background-color: #064e3b;
-            color: #a7f3d0;
-        }
-
-        td.negative {
-            background-color: #7f1d1d;
-            color: #fecaca;
-        }
-
-        .bets-section { margin-top: 50px; }
-        .bets-title { font-size: 1.3rem; color: #f3f4f6; text-align:center; margin-bottom:10px; }
-    </style>
+  <meta charset="UTF-8">
+  <title>AI Bet Battle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon.png' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
-<div class="container">
-    {% if request.user.is_staff %} <div style="text-align: center; margin-bottom: 30px;"> <a href="{% url 'import_matches' %}"> <button>Import matches + predictions</button> </a> <a href="{% url 'update_matches' %}"> <button>Update matches + predictions</button> </a> </div> {% endif %}
-    <div class="model-balances">
-        {% for m in models %}
-        <div class="model-balance">
-            <a href="{% url 'model_detail' m.slug %}">{{ m.name }}</a>
-            <span>${{ m.display_balance|floatformat:2 }} ({{ m.pending_bets|floatformat:2 }}$ bets)</span>
+  <div class="container">
+  {% if request.user.is_staff %}
+  <div class="admin-actions">
+    <a href="{% url 'import_matches' %}"><button>Import data</button></a>
+    <a href="{% url 'update_matches' %}"><button>Update data</button></a>
+  </div>
+  {% endif %}
+
+  <!-- AI CARDS -->
+  <div class="model-balances">
+  {% for m in models %}
+    <div class="model-balance">
+      <div class="model-header">
+        <a href="{% url 'model_detail' m.slug %}">{{ m.name }}</a>
+        {% if m.is_verified %}
+          <span class="verified">✔ Verified</span>
+        {% endif %}
+      </div>
+
+      <div class="balance">${{ m.display_balance|floatformat:2 }}</div>
+
+      <div class="stats">
+        <div class="stat">
+          <span>ROI</span>
+          <strong class="{% if m.roi >= 0 %}positive{% else %}negative{% endif %}">
+            {{ m.roi|floatformat:1 }}%
+          </strong>
         </div>
-        {% endfor %}
+        <div class="stat">
+          <span>Winrate</span>
+          <strong>{{ m.winrate|floatformat:0 }}%</strong>
+        </div>
+      </div>
+
+      <div class="pending">
+        Pending bets: ${{ m.pending_bets|floatformat:2 }}
+      </div>
     </div>
+  {% endfor %}
+  </div>
 
-    <canvas id="lineChart" width="800" height="350"></canvas>
+  <!-- CHART -->
+  <div id="chartContainer" data-history='{{ history_data|safe }}'>
+    <canvas id="lineChart" height="500"></canvas>
+  </div>
 
-    <hr>
+  <!-- TRUST -->
+  <div class="trust-bar">
+    <div>✔ All bets are real</div>
+    <div>✔ No manual edits</div>
+    <div>⏱ Updated: {{ last_update|date:"d.m.Y H:i" }}</div>
+  </div>
 
-    <div class="bets-section">
-        <h3 class="bets-title">Completed Bets</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Model</th>
-                    <th>Match</th>
-                    <th>Bet</th>
-                    <th>Bet Amount</th>
-                    <th>Rate</th>
-                    <th>Result</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for p in completed_bets %}
-                <tr>
-                    <td>{{ p.match.date|date:"(D) d.m.Y" }}</td>
-                    <td><a href="{% url 'model_detail' p.ai_model.slug %}">{{ p.ai_model.name }}</a></td>
-                    <td>{{ p.match.home }} vs {{ p.match.away }}</td>
-                    <td>{{ p.predicted_winner }}</td>
-                    <td>{{ p.bet_amount|floatformat:0 }}$</td>
-                    <td>{{ p.odds|floatformat:2 }}</td>
-                    <td class="{% if p.result < 0 %}negative{% elif p.result > 0 %}positive{% endif %}">
-                        {{ p.result|floatformat:0 }}$
-                    </td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="7">No completed bets</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+  <!-- TABLES -->
+  <div class="section-title">Completed Bets</div>
+  <div class="table-wrap">
+  <table>
+  <thead>
+  <tr>
+    <th>Date</th><th>Model</th><th>Match</th><th>Bet</th>
+    <th>Amount</th><th>Rate</th><th>Result</th>
+  </tr>
+  </thead>
+  <tbody>
+  {% for p in completed_bets %}
+  <tr>
+    <td>{{ p.match.date|date:"d.m.Y" }}</td>
+    <td>{{ p.ai_model.name }}</td>
+    <td>{{ p.match.home }} – {{ p.match.away }}</td>
+    <td>{{ p.predicted_winner }}</td>
+    <td>{{ p.bet_amount|floatformat:0 }}$</td>
+    <td>{{ p.odds|floatformat:2 }}</td>
+    <td class="{% if p.result < 0 %}negative{% elif p.result > 0 %}positive{% endif %}">
+      {{ p.result|floatformat:0 }}$
+    </td>
+  </tr>
+  {% endfor %}
+  </tbody>
+  </table>
+  </div>
 
-    <div class="bets-section">
-        <h3 class="bets-title">Upcoming Bets</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Model</th>
-                    <th>Match</th>
-                    <th>Bet</th>
-                    <th>Bet Amount</th>
-                    <th>Rate</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for p in upcoming_bets %}
-                <tr>
-                    <td>{{ p.match.date|date:"(D) d.m.Y" }}</td>
-                    <td><a href="{% url 'model_detail' p.ai_model.slug %}">{{ p.ai_model.name }}</a></td>
-                    <td>{{ p.match.home }} vs {{ p.match.away }}</td>
-                    <td>{{ p.predicted_winner }}</td>
-                    <td>{{ p.bet_amount|floatformat:0 }}$</td>
-                    <td>{{ p.odds|floatformat:2 }}</td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="6">No upcoming bets</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+  </div>
 
-</div>
-<script>
-    const historyData = JSON.parse('{{ history_data|safe }}');
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{% static 'js/main.js' %}"></script>
 
-    const labels = [...new Set(
-        Object.values(historyData)
-              .flat()
-              .map(h => h.date)
-    )].sort();
-
-    const colors = ['#3B82F6','#EF4444','#10B981','#F59E0B','#8B5CF6'];
-
-    const datasets = Object.entries(historyData).map(([model, entries], idx) => {
-      const color = colors[idx % colors.length];
-      const data = labels.map(date => {
-        const entry = entries.find(e => e.date === date);
-        return entry ? entry.balance : null;
-      });
-      return {
-        label: model,
-        data,
-        borderColor: color,
-        backgroundColor: color,
-        fill: false,
-        tension: 0.4,
-        pointRadius: 0,
-        borderWidth: 2
-      };
-    });
-
-    const balanceLabelPlugin = {
-      id: 'balanceLabelPlugin',
-      afterDatasetsDraw(chart) {
-        const { ctx } = chart;
-        ctx.save();
-        ctx.font = 'bold 12px Inter';
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'middle';
-
-        chart.data.datasets.forEach((dataset, i) => {
-          const meta = chart.getDatasetMeta(i);
-          if (!meta?.data?.length) return;
-
-          let lastIndex = dataset.data.length - 1;
-          while (lastIndex >= 0 &&
-            (dataset.data[lastIndex] === null ||
-             meta.data[lastIndex] === undefined)) {
-            lastIndex--;
-          }
-
-          if (lastIndex >= 0) {
-            const lastPoint = meta.data[lastIndex];
-            const lastValue = dataset.data[lastIndex];
-            if (lastPoint && lastValue !== undefined) {
-              ctx.fillStyle = dataset.borderColor;
-              ctx.fillText(`$${lastValue.toFixed(2)}`, lastPoint.x + 8, lastPoint.y - 5);
-            }
-          }
-        });
-
-        ctx.restore();
-      }
-    };
-
-    new Chart(document.getElementById('lineChart'), {
-      type: 'line',
-      data: { labels, datasets },
-      options: {
-        responsive: true,
-        layout: {
-          padding: { right: 60 }
-        },
-        plugins: {
-          legend: {
-            position: 'top',
-            labels: { usePointStyle: true, color: '#e5e7eb' }
-          },
-          tooltip: { mode: 'index', intersect: false }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            ticks: { color: '#e5e7eb', callback: v => '$' + v }
-          },
-          x: {
-            ticks: { color: '#e5e7eb', maxRotation: 45 }
-          }
-        }
-      },
-      plugins: [balanceLabelPlugin]
-    });
-</script>
 </body>
 </html>

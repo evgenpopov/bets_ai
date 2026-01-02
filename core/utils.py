@@ -40,7 +40,6 @@ def get_unfinished_match_data(rapidapi_id):
         },
         params={"id": str(rapidapi_id)}
     )
-    print(response.json())
     return response.json()['response']
 
 
