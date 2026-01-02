@@ -43,7 +43,9 @@
         </div>
         <div class="stat">
           <span>Winrate</span>
-          <strong>{{ m.winrate|floatformat:0 }}%</strong>
+          <strong>
+            {{ m.winrate|floatformat:0 }}%
+          </strong>
         </div>
       </div>
 
@@ -58,7 +60,7 @@
   <div id="chartContainer" data-history='{{ history_data|safe }}'>
     <canvas id="lineChart" height="500"></canvas>
   </div>
-
+  <br>
   <!-- TRUST -->
   <div class="trust-bar">
     <div>✔ All bets are real</div>

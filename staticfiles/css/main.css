@@ -132,7 +132,7 @@ a:hover { text-decoration:underline; }
   border:1px solid var(--border-soft);
   border-radius:18px;
   padding:16px 20px;
-  height:550px;
+  height:500px;
   margin-bottom:20px;
 }
 .chart-card canvas {

@@ -1,200 +1,15 @@
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>{{ model.name }} – AI Model</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-<style>
-:root {
-  --bg-main:#0b0e14;
-  --bg-card:rgba(17,20,27,.85);
-  --bg-hover:rgba(24,28,40,.95);
-  --border-soft:rgba(255,255,255,.06);
-
-  --text-main:#e5e7eb;
-  --text-muted:#9ca3af;
-
-  --blue:#3b82f6;
-  --green:#10b981;
-  --red:#ef4444;
-  --purple:#8b5cf6;
-}
-
-* { box-sizing:border-box; }
-
-body {
-  margin:0;
-  font-family:'Inter',system-ui,sans-serif;
-  background:
-    radial-gradient(1200px 500px at 50% -200px, rgba(59,130,246,.15), transparent),
-    var(--bg-main);
-  color:var(--text-main);
-  padding:40px 16px;
-}
-
-.container {
-  max-width:1100px;
-  margin:auto;
-}
-
-a { color:var(--blue); text-decoration:none; }
-a:hover { text-decoration:underline; }
-
-/* ===== HEADER ===== */
-.header {
-  display:flex;
-  align-items:center;
-  gap:16px;
-  margin-bottom:30px;
-}
-
-.back {
-  padding:8px 14px;
-  border-radius:10px;
-  background:rgba(59,130,246,.15);
-  color:var(--blue);
-  font-weight:600;
-  font-size:.9rem;
-}
-
-/* ===== MODEL CARD ===== */
-.model-card {
-  background:var(--bg-card);
-  backdrop-filter:blur(10px);
-  border:1px solid var(--border-soft);
-  border-radius:20px;
-  padding:22px;
-  margin-bottom:30px;
-}
-
-.model-title {
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-size:1.4rem;
-  font-weight:700;
-}
-
-.verified {
-  font-size:.7rem;
-  padding:3px 8px;
-  border-radius:8px;
-  background:rgba(16,185,129,.15);
-  color:var(--green);
-  font-weight:600;
-}
-
-.balance {
-  margin-top:12px;
-  font-size:1.6rem;
-  font-weight:700;
-}
-
-.pending {
-  font-size:.85rem;
-  color:var(--text-muted);
-  margin-top:4px;
-}
-
-/* ===== STATS ===== */
-.stats {
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
-  gap:12px;
-  margin-top:18px;
-}
-
-.stat {
-  background:rgba(255,255,255,.03);
-  border-radius:14px;
-  padding:12px;
-  text-align:center;
-}
-
-.stat span {
-  display:block;
-  font-size:.7rem;
-  color:var(--text-muted);
-}
-
-.stat strong {
-  font-size:1rem;
-  font-weight:700;
-}
-
-.positive { color:var(--green); }
-.negative { color:var(--red); }
-
-/* ===== TRUST ===== */
-.trust-bar {
-  display:flex;
-  gap:18px;
-  flex-wrap:wrap;
-  margin-top:18px;
-  font-size:.8rem;
-  color:var(--text-muted);
-}
-
-.trust-bar div {
-  background:rgba(255,255,255,.03);
-  padding:6px 14px;
-  border-radius:20px;
-}
-
-/* ===== TABLE ===== */
-.section-title {
-  margin:40px 0 16px;
-  font-size:1.2rem;
-  font-weight:700;
-}
-
-.table-wrap {
-  overflow-x:auto;
-}
-
-table {
-  width:100%;
-  border-collapse:collapse;
-  background:var(--bg-card);
-  border:1px solid var(--border-soft);
-  border-radius:16px;
-}
-
-th,td {
-  padding:12px 14px;
-  white-space:nowrap;
-}
-
-th {
-  font-size:.75rem;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-  color:var(--text-muted);
-  background:rgba(255,255,255,.03);
-}
-
-tr:nth-child(even) {
-  background:rgba(255,255,255,.02);
-}
-
-.no-data {
-  text-align:center;
-  padding:30px;
-  color:var(--text-muted);
-}
-
-/* ===== MOBILE ===== */
-@media (max-width:768px) {
-  body { padding:24px 12px; }
-  .model-title { font-size:1.2rem; }
-  .balance { font-size:1.4rem; }
-}
-</style>
+  <meta charset="UTF-8">
+  <title>{{ model.name }} – AI Model</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon.png' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -218,13 +33,15 @@ tr:nth-child(even) {
   <div class="stats">
     <div class="stat">
       <span>ROI</span>
-      <strong class="{% if model.roi >= 0 %}positive{% else %}negative{% endif %}">
-        {{ model.roi|floatformat:1 }}%
+      <strong class="{% if roi >= 0 %}positive{% else %}negative{% endif %}">
+        {{ roi|floatformat:1 }}%
       </strong>
     </div>
     <div class="stat">
       <span>Winrate</span>
-      <strong>{{ model.winrate|floatformat:0 }}%</strong>
+      <strong>
+        {{ winrate|floatformat:0 }}%
+      </strong>
     </div>
   </div>
 
@@ -270,6 +87,23 @@ tr:nth-child(even) {
 </tbody>
 </table>
 </div>
+
+<!-- Pagination -->
+{% if predictions.paginator.num_pages > 1 %}
+<div class="pagination">
+  {% if predictions.has_previous %}
+    <a href="?page={{ predictions.previous_page_number }}">← Prev</a>
+  {% endif %}
+
+  <span>
+    Page {{ predictions.number }} of {{ predictions.paginator.num_pages }}
+  </span>
+
+  {% if predictions.has_next %}
+    <a href="?page={{ predictions.next_page_number }}">Next →</a>
+  {% endif %}
+</div>
+{% endif %}
 
 </div>
 </body>
