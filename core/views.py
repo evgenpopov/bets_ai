@@ -10,7 +10,6 @@ from .tasks import import_matches_and_predictions, update_matches_and_prediction
 
 
 def index(request):
-    # Аннотация pending_bets и winrate сразу в запросе
     models_qs = ModelAI.objects.annotate(
         pending_bets=Sum(
             "predictions__bet_amount",
@@ -33,19 +32,20 @@ def index(request):
         percent_positive = round((positive / total * 100), 2) if total > 0 else 0
         pending = m.pending_bets or 0
 
+        display_balance = BalanceHistory.objects.filter(ai_model=m).last().balance
+
         models_with_pending.append({
             "id": m.id,
             "slug": m.slug,
             "name": m.name,
             "balance": m.balance,
             "pending_bets": pending,
-            "roi": round((m.balance + pending - 1000) / 1000 * 100, 2),
+            "roi": round((display_balance - 1000) / 1000 * 100, 2),
             "winrate": percent_positive,
-            "display_balance": m.balance + pending,
+            "display_balance": display_balance,
         })
 
 
-    # Last completed date
     last_completed_date = Prediction.objects.filter(result__isnull=False).order_by("-match__date").values_list("match__date", flat=True).first()
     if last_completed_date:
         completed_bets = Prediction.objects.filter(
@@ -55,7 +55,6 @@ def index(request):
     else:
         completed_bets = Prediction.objects.none()
 
-    # Upcoming bets
     today = datetime.date.today()
     upcoming_qs = Prediction.objects.filter(
         result__isnull=True,
@@ -64,7 +63,6 @@ def index(request):
     next_day = upcoming_qs.values_list("match__date", flat=True).first()
     upcoming_bets = upcoming_qs.filter(match__date=next_day) if next_day else Prediction.objects.none()
 
-    # Balance history
     history = BalanceHistory.objects.select_related("ai_model").order_by("date")
     history_data = {}
     for h in history:
@@ -90,16 +88,13 @@ def index(request):
 def model_detail(request, slug):
     model = get_object_or_404(ModelAI, slug=slug)
 
-    # Paginator
     predictions_qs = model.predictions.select_related('match').order_by('-id')
     paginator = Paginator(predictions_qs, 20)
     page_number = request.GET.get('page')
     predictions = paginator.get_page(page_number)
 
-    # Pending bets
     pending_bets = model.predictions.filter(match__winner__isnull=True).aggregate(total=Sum("bet_amount"))["total"] or 0
 
-    # Winrate: вычисляем через аннотацию, чтобы не делать count и exclude каждый раз
     stats = model.predictions.filter(result__isnull=False).aggregate(
         total=Count("id"),
         positive=Count("id", filter=~Q(result__startswith='-'))
@@ -108,13 +103,15 @@ def model_detail(request, slug):
     positive = stats["positive"] or 0
     percent_positive = round((positive / total * 100), 2) if total > 0 else 0
 
+    display_balance = BalanceHistory.objects.filter(ai_model=model).last().balance
+
     return render(request, 'core/model_detail.html', {
         'model': model,
-        'roi': round((model.balance + pending_bets - 1000) / 1000 * 100, 2),
+        'roi': round((display_balance - 1000) / 1000 * 100, 2),
         'winrate': percent_positive,
         'predictions': predictions,
         'pending_bets': pending_bets,
-        'display_balance': model.balance + pending_bets,
+        'display_balance': display_balance,
     })
 
 
