@@ -68,13 +68,12 @@ def import_matches_and_predictions():
                 continue
             prediction_result = json.loads(prediction_data).get("result")
             prediction_stake = json.loads(prediction_data).get("stake")
-            Prediction.objects.get_or_create(
-                ai_model=model, match=match,
-                defaults={
-                    'predicted_winner': prediction_result,
-                    'bet_amount': prediction_stake,
-                    'odds': odds_data.get(prediction_result.replace(" Goals", "").replace("BTTS ", ""), 1.5),
-                }
+            Prediction.objects.create(
+                ai_model=model,
+                match=match,
+                predicted_winner=prediction_result,
+                bet_amount=prediction_stake,
+                odds=odds_data.get(prediction_result.replace(" Goals", "").replace("BTTS ", ""), 1.5),
             )
 
             model.balance -= float(prediction_stake)
