@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ match.home }} vs {{ match.away }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/event_detail.css' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon.png' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+<div class="container">
+
+  <div class="header">
+    <a href="javascript:history.back()" class="back">← Back</a>
+  </div>
+
+  <!-- MATCH CARD -->
+  <div class="match-card">
+
+    <!-- HEADER -->
+    <div class="match-header">
+      <div class="match-type">
+        {{ match.get_type_display }}
+      </div>
+
+      <div class="match-date">
+        {{ match.date|date:"d M Y" }}
+      </div>
+    </div>
+
+    <!-- SCORE -->
+    <div class="match-title score-title">
+      <span class="team">
+        {{ match.home }}
+      </span>
+
+      <span class="score-inline">
+        {% if match.score_home != None and match.score_away != None %}
+          {{ match.score_home }} : {{ match.score_away }}
+        {% else %}
+          – : -
+        {% endif %}
+      </span>
+
+      <span class="team">
+        {{ match.away }}
+      </span>
+    </div>
+
+    <!-- ODDS -->
+    {% if odds %}
+    <div class="odds-block">
+      <div class="odds-title">Match Odds</div>
+
+      <div class="odds-grid">
+        {% for name, value in odds.items %}
+        <div class="odd-card">
+          <span class="odd-name">{{ name }}</span>
+          <strong class="odd-value">{{ value }}</strong>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- AI BETS -->
+    {% if info %}
+    <div class="bets-block">
+      <div class="bets-title">AI Bets</div>
+
+      <div class="bets-list">
+        {% for model, data in info.items %}
+        <div class="bet-row">
+          <div class="bet-model">{{ model }}</div>
+          <div class="bet-pick">{{ data.predicted_winner }}</div>
+          <div class="bet-amount">${{ data.bet_amount|floatformat:0 }}</div>
+          <div class="bet-odds">x{{ data.odds|floatformat:2 }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+
+  <!-- COMMENTS -->
+  {% if comments %}
+  <div class="info-card">
+    <div class="info-title"><b>AI Analysis</b></div>
+
+    <div class="comments-grid">
+      {% for model, comment in comments.items %}
+      <div class="comment-card">
+        <div class="comment-header">
+          <span class="model-name">{{ model }}</span>
+        </div>
+        <div class="comment-text">
+          {{ comment }}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+</body>
+</html>

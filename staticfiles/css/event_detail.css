@@ -1,0 +1,203 @@
+@import url("model_detail.css");
+
+/* ===== MATCH CARD ===== */
+.match-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-soft);
+  border-radius: 20px;
+  padding: 20px 26px;
+  margin-bottom: 30px;
+}
+
+/* ===== HEADER ===== */
+.match-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.match-type {
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--purple);
+}
+
+.match-date {
+  font-size: .85rem;
+  color: var(--text-muted);
+}
+
+/* ===== SCORE ===== */
+.match-title.score-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.team {
+  font-size: 1.4rem;
+  white-space: nowrap;
+}
+
+.team.winner {
+  color: var(--green);
+}
+
+.score-inline {
+  font-size: 1.6rem;
+  font-weight: 800;
+  padding: 6px 16px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.05);
+  letter-spacing: .08em;
+}
+
+/* ===== ODDS ===== */
+.odds-block {
+  margin-top: 24px;
+}
+
+.odds-title {
+  font-size: .9rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.odds-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+}
+
+.odd-card {
+  background: rgba(255,255,255,.04);
+  border-radius: 14px;
+  padding: 10px;
+  text-align: center;
+}
+
+.odd-name {
+  display: block;
+  font-size: .75rem;
+  color: var(--text-muted);
+}
+
+.odd-value {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* ===== AI BETS ===== */
+.bets-block {
+  margin-top: 26px;
+}
+
+.bets-title {
+  font-size: .9rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.bets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bet-row {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr .8fr .8fr;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255,255,255,.04);
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: .85rem;
+}
+
+.bet-model {
+  font-weight: 700;
+}
+
+.bet-pick {
+  color: var(--blue);
+  font-weight: 600;
+}
+
+.bet-amount,
+.bet-odds {
+  text-align: right;
+}
+
+/* ===== COMMENTS ===== */
+.comments-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.comment-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 18px;
+  padding: 18px 20px;
+  position: relative;
+}
+
+.comment-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 18px;
+  bottom: 18px;
+  width: 3px;
+  background: linear-gradient(180deg, var(--blue), var(--purple));
+  border-radius: 3px;
+}
+
+.comment-header {
+  margin-bottom: 10px;
+}
+
+.model-name {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.comment-text {
+  font-size: .9rem;
+  line-height: 1.65;
+  padding-left: 14px;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width:768px) {
+  .match-title.score-title {
+    font-size: 1.3rem;
+    gap: 12px;
+  }
+
+  .team {
+    font-size: 1.2rem;
+  }
+
+  .score-inline {
+    font-size: 1.4rem;
+  }
+
+  .bet-row {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 6px;
+  }
+
+  .bet-amount,
+  .bet-odds {
+    text-align: left;
+  }
+}

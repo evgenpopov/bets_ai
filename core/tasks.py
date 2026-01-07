@@ -43,6 +43,11 @@ def import_matches_and_predictions():
             odds_data = get_match_odds(match.home, match.away, match.metadata['league']['id'])
             if not odds_data:
                 continue
+
+            if not match.odds:
+                match.odds = odds_data
+                match.save()
+
             data = {
                 "balance": model.balance, "home": match.home, "away": match.away,
                 "date": match.date.strftime("%Y-%m-%d"),

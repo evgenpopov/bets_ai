@@ -34,6 +34,7 @@ class Match(models.Model):
     score_away = models.IntegerField(blank=True, null=True)
 
     metadata = models.JSONField(blank=True, null=True)
+    odds = models.JSONField(blank=True, null=True)
     rapidapi_id = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
@@ -59,6 +60,7 @@ class Prediction(models.Model):
     bet_amount = models.FloatField(default=100.0)
     odds = models.FloatField(default=1.5)
     result = models.CharField(null=True, blank=True)
+    comment = models.TextField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.ai_model.name} → {self.match}: {self.predicted_winner} (rate {self.odds})"

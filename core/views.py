@@ -115,6 +115,29 @@ def model_detail(request, slug):
     })
 
 
+def event_detail(request, event_id):
+    event = get_object_or_404(Match, id=event_id)
+
+    info = {}
+    comments = {}
+    for prediction in Prediction.objects.filter(match=event):
+        if prediction.comment:
+            comments[prediction.ai_model.name] = prediction.comment
+
+        info[prediction.ai_model.name] = {
+            'bet_amount': prediction.bet_amount,
+            'predicted_winner': prediction.predicted_winner,
+            'odds': prediction.odds,
+        }
+
+    return render(request, 'core/event_detail.html', {
+        'match': event,
+        'comments': comments,
+        'info': info,
+        'odds': event.odds
+    })
+
+
 def import_matches(request):
     import_matches_and_predictions.apply_async()
     return redirect('index')
