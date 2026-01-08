@@ -300,9 +300,11 @@ USER_PROMPT = '''
           - "BTTS No"
      - Prefer to Draw or (home win) or (away win). Use other bets if you 100% sure.
      - Calculate the optimal stake amount.
+     - Write a comment on the bet explaining why you decided that way.
     Output strictly in this JSON format:
           "result": "{1}",   // or "{2}", "Draw", "Over 2.5 Goals", "Under 2.5 Goals", "BTTS Yes", "BTTS No"
           "stake": 30             // numeric value in dollars
+          "comment": ""
     Constraints:
      - Only return JSON, no additional explanation.
      - Use probability analysis and risk management to determine both outcome and stake.

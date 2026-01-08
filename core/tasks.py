@@ -73,11 +73,14 @@ def import_matches_and_predictions():
                 continue
             prediction_result = json.loads(prediction_data).get("result")
             prediction_stake = json.loads(prediction_data).get("stake")
+            prediction_comment = json.loads(prediction_data).get("comment")
+
             Prediction.objects.create(
                 ai_model=model,
                 match=match,
                 predicted_winner=prediction_result,
                 bet_amount=prediction_stake,
+                comment=prediction_comment,
                 odds=odds_data.get(prediction_result.replace(" Goals", "").replace("BTTS ", ""), 1.5),
             )
 
