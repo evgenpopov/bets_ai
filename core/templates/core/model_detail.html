@@ -69,7 +69,7 @@
 {% for p in predictions %}
 <tr>
   <td>{{ p.match.date|date:"d.m.Y" }}</td>
-  <td>{{ p.match.home }} – {{ p.match.away }}</td>
+  <td><a href="{% url 'event_detail' p.match.id %}">{{ p.match.home }} – {{ p.match.away }}</a></td>
   <td>{{ p.predicted_winner }}</td>
   <td>{{ p.bet_amount|floatformat:0 }}$</td>
   <td>{{ p.odds|floatformat:2 }}</td>

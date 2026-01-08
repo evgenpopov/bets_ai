@@ -130,11 +130,17 @@ def event_detail(request, event_id):
             'odds': prediction.odds,
         }
 
+    event_odds = event.odds
+    if 'No' in event_odds:
+        event_odds['BTTS No'] = event_odds.pop('No')
+    if 'Yes' in event_odds:
+        event_odds['BTTS Yes'] = event_odds.pop('Yes')
+
     return render(request, 'core/event_detail.html', {
         'match': event,
         'comments': comments,
         'info': info,
-        'odds': event.odds
+        'odds': event_odds
     })
 
 

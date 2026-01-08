@@ -16,6 +16,7 @@ from .models import Match, Prediction, ModelAI
 
 load_dotenv()
 LEAGUES_LIST_ID = [140, 2, 3, 848, 78, 32, 135, 39, 61]
+# super cups 143, 871, 66, 137, 81, 526, 556
 
 
 def get_matches(date):

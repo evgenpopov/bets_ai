@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load static %}
+{% load static core %}
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -26,10 +26,16 @@
     <div class="match-header">
       <div class="match-type">
         {{ match.get_type_display }}
+        <span style="opacity:.5;margin:0 6px">•</span>
+        {{ match.metadata.league.name }}
+        <span style="opacity:.5;margin:0 6px">•</span>
+        {{ match.metadata.fixture.venue.name }}
       </div>
 
       <div class="match-date">
-        {{ match.date|date:"d M Y" }}
+        {{ match.metadata.fixture.date|convert_data }}
+        <span style="opacity:.5;margin:0 6px">•</span>
+        {{ match.metadata.fixture.date|convert_time }}
       </div>
     </div>
 
