@@ -203,6 +203,38 @@ tr:nth-child(even) {
   background:rgba(255,255,255,.02);
 }
 
+/* ===== HERO ===== */
+.hero {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 10px 20px 32px;
+}
+
+.hero h1 {
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+}
+
+.hero-line {
+  width: 80px;
+  height: 4px;
+  margin: 0 auto 18px;
+  background: linear-gradient(90deg, var(--blue), var(--purple));
+  border-radius: 4px;
+  box-shadow: 0 0 12px rgba(139,92,246,.5);
+}
+
+.hero p {
+  max-width: 900px;
+  margin: 0 auto;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
+
+
 /* ===== MOBILE ===== */
 @media (max-width:768px) {
   body { padding:30px 12px; }
