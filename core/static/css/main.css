@@ -19,7 +19,7 @@ body {
   margin:0;
   font-family:'Inter',system-ui,sans-serif;
   background:
-    radial-gradient(1200px 500px at 50% -50px, rgba(59,130,246,.15), transparent),
+    radial-gradient(1200px 500px at 50% -50px, rgba(59,130,246,.15), transparent) no-repeat,
     var(--bg-main);
   color:var(--text-main);
   padding:50px 16px;
