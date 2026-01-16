@@ -16,7 +16,7 @@
 <div class="container">
 
 <div class="header">
-  <a href="{% url 'index' %}" class="back">← Dashboard</a>
+  <a href="{% url 'index' %}" class="back">Dashboard</a>
 </div>
 
 <div class="model-card">
@@ -70,14 +70,21 @@
 <tr>
   <td>{{ p.match.date|date:"d.m.Y" }}</td>
   <td><a href="{% url 'event_detail' p.match.id %}">{{ p.match.home }} – {{ p.match.away }}</a></td>
-  <td>{{ p.predicted_winner }}</td>
-  <td>{{ p.bet_amount|floatformat:0 }}$</td>
-  <td>{{ p.odds|floatformat:2 }}</td>
-  <td class="{% if p.result > 0 %}positive{% elif p.result < 0 %}negative{% endif %}">
-    {% if p.result is not None %}
-      {{ p.result|floatformat:0 }}$
-    {% endif %}
-  </td>
+  {% if account_type == "lite" and p.result is None %}
+    <td>🔒 Upgrade to Premium to see upcoming bets.</td>
+    <td></td>
+    <td></td>
+    <td></td>
+  {% else %}
+    <td>{{ p.predicted_winner }}</td>
+    <td>{{ p.bet_amount|floatformat:0 }}$</td>
+    <td>{{ p.odds|floatformat:2 }}</td>
+    <td class="{% if p.result > 0 %}positive{% elif p.result < 0 %}negative{% endif %}">
+      {% if p.result is not None %}
+        {{ p.result|floatformat:0 }}$
+      {% endif %}
+    </td>
+  {% endif %}
 </tr>
 {% empty %}
 <tr>

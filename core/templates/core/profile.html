@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Profile • AI Bet Battle</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon.png' %}">
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+<body>
+
+
+<div class="page-top-buttons">
+  <form method="post" action="{% url 'logout' %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="top-btn logout">Logout</button>
+  </form>
+
+  <a href="{% url 'index' %}" class="back">Dashboard</a>
+</div>
+
+<div class="hero">
+  <h1>Account Overview</h1>
+  <div class="hero-line"></div>
+</div>
+
+<div class="container">
+
+  <div class="profile-card">
+
+    <div class="profile-info">
+      <div class="info-row"><strong>Login:</strong> {{ request.user.username }}</div>
+      <div class="info-row"><strong>Email:</strong> {{ request.user.email }}</div>
+
+      <div class="info-row account-row">
+        <strong>Account type:</strong> {{ profile.account_type|capfirst }}
+        {% if profile.account_type == "lite" %}
+          <form method="post" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" name="upgrade" class="top-btn primary upgrade-btn">Upgrade</button>
+          </form>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

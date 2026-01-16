@@ -1,10 +1,13 @@
 import json
 import datetime
 
+from django.contrib import messages
 from django.db.models import Sum, Q, Count
 from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 
+from .forms import RegisterForm
 from .models import ModelAI, Match, Prediction, BalanceHistory
 from .tasks import import_matches_and_predictions, update_matches_and_predictions
 
@@ -55,13 +58,19 @@ def index(request):
     else:
         completed_bets = Prediction.objects.none()
 
-    today = datetime.date.today()
-    upcoming_qs = Prediction.objects.filter(
-        result__isnull=True,
-        match__date__gte=today
-    ).select_related("match", "ai_model").order_by("match__date")
-    next_day = upcoming_qs.values_list("match__date", flat=True).first()
-    upcoming_bets = upcoming_qs.filter(match__date=next_day) if next_day else Prediction.objects.none()
+    account_type = getattr(request.user, 'profile', None)
+    account_type = account_type.account_type if account_type else 'lite'
+
+    if account_type != 'lite':
+        today = datetime.date.today()
+        upcoming_qs = Prediction.objects.filter(
+            result__isnull=True,
+            match__date__gte=today
+        ).select_related("match", "ai_model").order_by("match__date")
+        next_day = upcoming_qs.values_list("match__date", flat=True).first()
+        upcoming_bets = upcoming_qs.filter(match__date=next_day) if next_day else Prediction.objects.none()
+    else:
+        upcoming_bets = Prediction.objects.none()
 
     history = BalanceHistory.objects.select_related("ai_model").order_by("date")
     history_data = {}
@@ -82,6 +91,7 @@ def index(request):
         "balance_history": history,
         "history_data": history_json,
         "last_update": last_update,
+        "account_type": account_type,
     })
 
 
@@ -105,6 +115,9 @@ def model_detail(request, slug):
 
     display_balance = BalanceHistory.objects.filter(ai_model=model).last().balance
 
+    account_type = getattr(request.user, 'profile', None)
+    account_type = account_type.account_type if account_type else 'lite'
+
     return render(request, 'core/model_detail.html', {
         'model': model,
         'roi': round((display_balance - 1000) / 1000 * 100, 2),
@@ -112,6 +125,7 @@ def model_detail(request, slug):
         'predictions': predictions,
         'pending_bets': pending_bets,
         'display_balance': display_balance,
+        'account_type': account_type,
     })
 
 
@@ -136,11 +150,15 @@ def event_detail(request, event_id):
     if 'Yes' in event_odds:
         event_odds['BTTS Yes'] = event_odds.pop('Yes')
 
+    account_type = getattr(request.user, 'profile', None)
+    account_type = account_type.account_type if account_type else 'lite'
+
     return render(request, 'core/event_detail.html', {
         'match': event,
         'comments': comments,
         'info': info,
-        'odds': event_odds
+        'odds': event_odds,
+        'account_type': account_type
     })
 
 
@@ -152,3 +170,45 @@ def import_matches(request):
 def update_matches(request):
     update_matches_and_predictions.apply_async()
     return redirect('index')
+
+
+def register_view(request):
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("login")
+    else:
+        form = RegisterForm()
+
+    return render(request, "core/register.html", {"form": form})
+
+
+@login_required
+def profile_view(request):
+    profile = getattr(request.user, 'profile', None)
+    account_type = profile.account_type if profile else 'lite'
+
+    return render(request, "core/profile.html", {
+        "account_type": account_type
+    })
+
+@login_required
+def profile_view(request):
+    profile = getattr(request.user, 'profile', None)
+    if not profile:
+        messages.error(request, "Profile not found.")
+        return redirect("index")
+
+    if request.method == "POST" and "upgrade" in request.POST:
+        if profile.account_type == "premium":
+            messages.info(request, "You are already a Premium user!")
+        else:
+            # Здесь в будущем можно интегрировать платежную систему
+            profile.account_type = "premium"
+            profile.save()
+            messages.success(request, "Your account has been upgraded to Premium!")
+
+        return redirect("profile")
+
+    return render(request, "core/profile.html", {"profile": profile})

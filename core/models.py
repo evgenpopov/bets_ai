@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
+from django.contrib.auth.models import User
 
 
 class ModelAI(models.Model):
@@ -73,3 +74,8 @@ class BalanceHistory(models.Model):
 
     def __str__(self):
         return f"{self.ai_model.name} - {self.balance:.2f} ({self.date.strftime('%Y-%m-%d %H:%M')})"
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    account_type = models.CharField(max_length=10, choices=[('lite','Lite'),('premium','Premium')], default='lite')

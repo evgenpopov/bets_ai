@@ -50,6 +50,10 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'bets_ai.urls'
 
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = '/login/'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

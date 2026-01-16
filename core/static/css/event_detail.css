@@ -161,6 +161,55 @@
   border-radius: 3px;
 }
 
+.back {
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: rgba(59,130,246,.15);
+  color: var(--blue);
+  font-weight: 600;
+  font-size: .85rem;
+  text-decoration: none;
+  display: inline-block;
+  transition:
+    background 0.25s ease,
+    transform 0.2s ease,
+    box-shadow 0.25s ease;
+}
+
+.back:hover {
+  background: rgba(59,130,246,.25);
+  transform: translateY(-1px);
+  box-shadow: 0 0 18px rgba(59,130,246,.35);
+  text-decoration: none;
+}
+
+.top-btn {
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: .85rem;
+  background: rgba(255,255,255,.05);
+  border: 1px solid var(--border-soft);
+  color: var(--text-main);
+  cursor: pointer;
+  text-decoration: none !important;
+  transition: background .25s ease, transform .2s ease, box-shadow .25s ease;
+}
+
+.top-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0,0,0,.35);
+}
+
+.top-btn.primary {
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  border: none;
+}
+
+.top-btn.primary:hover {
+  box-shadow: 0 0 22px rgba(139,92,246,.45);
+}
+
 .comment-header {
   margin-bottom: 10px;
 }

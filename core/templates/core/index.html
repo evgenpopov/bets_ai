@@ -14,6 +14,26 @@
 
 <body>
 
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <div class="top-actions">
+        {% if user.is_authenticated %}
+          <a href="{% url 'profile' %}" class="profile-icon" title="Profile">
+            👤
+          </a>
+          <form method="post" action="{% url 'logout' %}" class="logout-form">
+            {% csrf_token %}
+            <button type="submit" class="top-btn logout">Logout</button>
+          </form>
+        {% else %}
+          <a href="{% url 'login' %}" class="top-btn">Login</a>
+          <a href="{% url 'register' %}" class="top-btn primary">Register</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+
   <div class="hero">
     <h1>AI Bet Battle</h1>
     <div class="hero-line"></div>
@@ -29,12 +49,6 @@
   </div>
 
   <div class="container">
-  {% if request.user.is_staff %}
-  <div class="admin-actions">
-    <a href="{% url 'import_matches' %}"><button>Import data</button></a>
-    <a href="{% url 'update_matches' %}"><button>Update data</button></a>
-  </div>
-  {% endif %}
 
   <!-- AI CARDS -->
   <div class="model-balances">
@@ -87,42 +101,50 @@
 
     <!-- UPCOMING BETS -->
   <div class="section-title">Upcoming Bets</div>
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Model</th>
-          <th>Match</th>
-          <th>Bet</th>
-          <th>Amount</th>
-          <th>Rate</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for p in upcoming_bets %}
-        <tr>
-          <td>{{ p.match.date|date:"d.m.Y" }}</td>
-          <td><a href="{% url 'model_detail' p.ai_model.slug %}">{{ p.ai_model.name }}</a></td>
-          <td><a href="{% url 'event_detail' p.match.id %}">{{ p.match.home }} – {{ p.match.away }}</a></td>
-          <td>{{ p.predicted_winner }}</td>
-          <td>{{ p.bet_amount|floatformat:0 }}$</td>
-          <td>{{ p.odds|floatformat:2 }}</td>
-          <td>
-            ⏳ Pending
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="7" style="text-align:center; color:var(--text-muted);">
-            No upcoming bets
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+  {% if account_type == 'premium' %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Model</th>
+            <th>Match</th>
+            <th>Bet</th>
+            <th>Amount</th>
+            <th>Rate</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in upcoming_bets %}
+          <tr>
+            <td>{{ p.match.date|date:"d.m.Y" }}</td>
+            <td><a href="{% url 'model_detail' p.ai_model.slug %}">{{ p.ai_model.name }}</a></td>
+            <td><a href="{% url 'event_detail' p.match.id %}">{{ p.match.home }} – {{ p.match.away }}</a></td>
+            <td>{{ p.predicted_winner }}</td>
+            <td>{{ p.bet_amount|floatformat:0 }}$</td>
+            <td>{{ p.odds|floatformat:2 }}</td>
+            <td>⏳ Pending</td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="7" style="text-align:center; color:var(--text-muted);">
+              No upcoming bets
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="text-align:center; padding: 0 0 50px 0; color: var(--text-muted); font-size: 1.1rem;">
+      🔒 Upgrade to Premium to see upcoming bets.
+      <br>
+      <br>
+      <a href="{% url 'profile' %}" class="top-btn primary" style="margin-top: 12px;">Upgrade Account</a>
+    </div>
+  {% endif %}
+
 
   <div class="section-title">Completed Bets</div>
   <div class="table-wrap">

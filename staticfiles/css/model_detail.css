@@ -19,7 +19,7 @@ body {
   margin:0;
   font-family:'Inter',system-ui,sans-serif;
   background:
-    radial-gradient(1200px 500px at 50% -200px, rgba(59,130,246,.15), transparent),
+    radial-gradient(1200px 500px at 50% -50px, rgba(59,130,246,.15), transparent) no-repeat,
     var(--bg-main);
   color:var(--text-main);
   padding:40px 16px;
@@ -42,12 +42,25 @@ a:hover { text-decoration:underline; }
 }
 
 .back {
-  padding:8px 14px;
-  border-radius:10px;
-  background:rgba(59,130,246,.15);
-  color:var(--blue);
-  font-weight:600;
-  font-size:.9rem;
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: rgba(59,130,246,.15);
+  color: var(--blue);
+  font-weight: 600;
+  font-size: .85rem;
+  text-decoration: none;
+  display: inline-block;
+  transition:
+    background 0.25s ease,
+    transform 0.2s ease,
+    box-shadow 0.25s ease;
+}
+
+.back:hover {
+  background: rgba(59,130,246,.25);
+  transform: translateY(-1px);
+  box-shadow: 0 0 18px rgba(59,130,246,.35);
+  text-decoration: none;
 }
 
 /* ===== MODEL CARD ===== */

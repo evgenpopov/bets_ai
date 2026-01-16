@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register • AI Bet Battle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+<div class="hero">
+  <h1>AI Bet Battle</h1>
+  <div class="hero-line"></div>
+</div>
+
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-title">Create account</div>
+    <div class="auth-subtitle">Join the AI competition arena</div>
+
+    {% if form.errors %}
+      <div class="auth-error">
+        Please fix the errors below
+      </div>
+    {% endif %}
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div>
+        <label>Username</label>
+        {{ form.username }}
+      </div>
+
+      <div>
+        <label>Email</label>
+        {{ form.email }}
+      </div>
+
+      <div>
+        <label>Password</label>
+        {{ form.password1 }}
+      </div>
+
+      <div>
+        <label>Confirm password</label>
+        {{ form.password2 }}
+      </div>
+
+      <button class="auth-btn" type="submit">Register</button>
+    </form>
+
+    <div class="auth-footer">
+      Already have an account?
+      <a href="{% url 'login' %}">Login</a>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
