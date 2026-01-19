@@ -1,4 +1,7 @@
+from datetime import timedelta
+
 from django.db import models
+from django.utils import timezone
 from django.utils.text import slugify
 from django.contrib.auth.models import User
 
@@ -79,3 +82,16 @@ class BalanceHistory(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     account_type = models.CharField(max_length=10, choices=[('lite','Lite'),('premium','Premium')], default='lite')
+    premium_until = models.DateTimeField(null=True, blank=True)
+
+    def has_premium(self):
+        if self.account_type != 'premium':
+            return False
+        if self.premium_until and self.premium_until < timezone.now():
+            return False
+        return True
+
+    def start_trial(self, days=3):
+        self.account_type = 'premium'
+        self.premium_until = timezone.now() + timedelta(days=days)
+        self.save()

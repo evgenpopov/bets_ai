@@ -533,6 +533,131 @@ tr:nth-child(even) {
 .message.info { background: rgba(59,130,246,.2); color: var(--blue); }
 
 
+/* ===== SUBSCRIPTION ===== */
+.plans {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+  gap: 24px;
+  margin-top: 40px;
+}
+
+.plan-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 20px;
+  padding: 26px;
+  text-align: center;
+}
+
+.plan-card:hover {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.plan-card.premium {
+  box-shadow: 0 0 30px rgba(139,92,246,.25);
+}
+
+.plan-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 6px;
+}
+
+.plan-price {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin: 14px 0;
+}
+
+.plan-features {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+  font-size: .9rem;
+  text-align: center; /* центр всей колонки */
+}
+
+.plan-features li {
+  display: flex;
+  justify-content: center; /* центрируем содержимое строки */
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.plan-features li::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(59,130,246,.6);
+  background: rgba(255,255,255,.25);
+}
+
+.plan-features li.on {
+  color: var(--text-main);
+}
+
+.plan-features li.on::before {
+  background: var(--blue);
+}
+
+.plan-features li.off {
+  color: var(--text-muted);
+  opacity: .6;
+}
+
+
+.plan-footer {
+  margin-top: 20px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: .8rem;
+  background: rgba(255,255,255,.08);
+}
+
+.badge.premium {
+  background: linear-gradient(135deg,var(--blue),var(--purple));
+  color: #fff;
+}
+
+.trial-note {
+  margin-top: 10px;
+  font-size: .75rem;
+  color: var(--text-muted);
+}
+
+.site-title {
+  position: relative;
+  display: inline-block;
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.beta-badge {
+  position: absolute;
+  top: -10px;
+  right: -36px;
+
+  font-size: .6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 999px;
+
+  background: rgba(139,92,246,.15);
+  color: var(--purple);
+  letter-spacing: .08em;
+
+  user-select: none;
+  pointer-events: none;
+}
+
 /* ===== MOBILE ===== */
 @media (max-width:768px) {
   body { padding:30px 12px; }

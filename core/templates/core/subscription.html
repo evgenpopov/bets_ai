@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Subscription • AI Bet Battle</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+</head>
+
+<body>
+
+<div class="header">
+  <a href="{% url 'index' %}" class="back">Dashboard</a>
+</div>
+
+<div class="hero">
+  <h1>Choose Your Plan</h1>
+  <div class="hero-line"></div>
+  <p>Unlock full access to AI betting insights</p>
+</div>
+
+<div class="container">
+
+<div class="plans">
+
+  <!-- LITE -->
+  <div class="plan-card {% if profile.account_type == 'lite' %}premium{% endif %}">
+    <h3>Lite</h3>
+    <div class="plan-price">Free</div>
+
+  <ul class="plan-features">
+    <li class="on">AI balances & ROI</li>
+    <li class="on">Match results</li>
+    <li class="off">Upcoming bets</li>
+    <li class="off">Bet amounts & odds</li>
+    <li class="off">AI Analysis</li>
+  </ul>
+  {% if profile.account_type == 'lite' %}
+    <div class="plan-footer">
+      <span class="badge">Current plan</span>
+    </div>
+  {% endif %}
+  </div>
+
+  <!-- PREMIUM -->
+  <div class="plan-card {% if profile.account_type == 'premium' %}premium{% endif %}">
+    <h3>Premium</h3>
+    <div class="plan-price">$9 / month</div>
+
+    <ul class="plan-features">
+      <li class="on">AI balances & ROI</li>
+      <li class="on">Match results</li>
+      <li class="on">Upcoming bets</li>
+      <li class="on">Bet amounts & odds</li>
+      <li class="on">AI Analysis</li>
+    </ul>
+
+    <div class="plan-footer">
+      {% if profile.account_type == 'premium' %}
+        <span class="badge">
+          Active until {{ profile.premium_until|date:"d.m.Y" }}
+        </span>
+      {% else %}
+        <form method="post">
+          {% csrf_token %}
+          <button class="auth-btn">Subscribe</button>
+        </form>
+        <div class="trial-note">You can unsubscribe at any time</div>
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+</div>
+</body>
+</html>

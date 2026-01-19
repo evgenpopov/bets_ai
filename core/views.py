@@ -212,3 +212,21 @@ def profile_view(request):
         return redirect("profile")
 
     return render(request, "core/profile.html", {"profile": profile})
+
+
+@login_required
+def subscription(request):
+    profile = request.user.profile
+
+    if request.method == 'POST':
+        if profile.account_type == "premium":
+            messages.info(request, "You are already a Premium user!")
+        else:
+            # Здесь в будущем можно интегрировать платежную систему
+            profile.account_type = "premium"
+            profile.save()
+            messages.success(request, "Your account has been upgraded to Premium!")
+
+    return render(request, 'core/subscription.html', {
+        'profile': profile
+    })
