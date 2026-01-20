@@ -98,23 +98,21 @@ def get_model_prediction(data, model_name, event_count, event_num):
     total_balance = model.balance + pending_bets
 
     user_prompt = USER_PROMPT.format(
-        data.get("balance"),
-        data.get("home"),
-        data.get("away"),
-        data.get("date"),
-        data.get("home_last_results"),
-        data.get("away_last_results"),
-        data.get("home_rate"),
-        data.get("draw_rate"),
-        data.get("away_rate"),
-        data.get("over"),
-        data.get("under"),
-        data.get("yes"),
-        data.get("no"),
-        event_count,
-        event_num,
-        total_balance,
-        pending_bets,
+        balance=total_balance,
+        home=data.get("home"),
+        away=data.get("away"),
+        date=data.get("date"),
+        home_last=data.get("home_last_results"),
+        away_last=data.get("away_last_results"),
+        home_rate=data.get("home_rate"),
+        draw_rate=data.get("draw_rate"),
+        away_rate=data.get("away_rate"),
+        over=data.get("over"),
+        under=data.get("under"),
+        btts_yes=data.get("yes"),
+        btts_no=data.get("no"),
+        event_count=event_count,
+        event_num=event_num
     )
 
     model_dispatch = {
@@ -124,7 +122,6 @@ def get_model_prediction(data, model_name, event_count, event_num):
         "GROK 4": ai.grok,
         "Claude Sonnet 4.5": ai.anthropic,
     }
-
     model_func = model_dispatch.get(model_name, ai.deepseek)
 
     return model_func(system_prompt=system_prompt, user_prompt=user_prompt)
@@ -267,17 +264,16 @@ SYSTEM_PROMPT = """
         You behave like a disciplined syndicate-level bettor, not a gambler.
     """
 
-
-USER_PROMPT = '''
-   Rules:
-     - You operate as a professional football bettor with over 20 years of experience.
-     - Your primary objective is long-term profitability and bankroll preservation, not short-term wins.
-     - Never allocate more than your total available budget across all events combined.
-     - Total budget available for this prediction: {13}$
-     - Count of events: {14}
-     - Current event number: {15}
-     - The total sum of all open bets must never exceed 50% of total bankroll.
-     - Use ONLY the provided data (no assumptions, no external knowledge).
+USER_PROMPT = """
+    Rules:
+      - You operate as a professional football bettor with over 20 years of experience.
+      - Your primary objective is long-term profitability and bankroll preservation, not short-term wins.
+      - Never allocate more than your total available budget across all events combined.
+      - Total budget available for this prediction: {balance}$
+      - Count of events: {event_count}
+      - Current event number: {event_num}
+      - The total sum of all open bets must never exceed 50% of total bankroll.
+      - Use ONLY the provided data (no assumptions, no external knowledge).
     
     Analytical Framework (MANDATORY):
     1. Convert all odds into implied probabilities.
@@ -294,16 +290,20 @@ USER_PROMPT = '''
     5. Prefer 1X2 markets (Home Win, Away Win, Draw).
        Use alternative markets ONLY if the edge is significantly clearer.
     
-    Risk Management & Stake Sizing:
-    - Base betting unit = 1% of total bankroll.
+    Risk Management & Stake Sizing (Aggressive 50% Cap)
+    - Base betting unit = 2% of total bankroll.
     - Stake sizing must follow conservative fractional-Kelly principles:
-       - Low confidence / small edge: 0.5–1% of bankroll
-       - Medium confidence / solid edge: 1–2% of bankroll
-       - High confidence (rare): maximum 3% of bankroll
+      - Low confidence / small edge: 1–2% of bankroll
+      - Medium confidence / solid edge: 3–5% of bankroll
+      - High confidence (rare): maximum 6-10% of bankroll
+    - Exposure limit: total active stakes must not exceed 50% of bankroll.
     - NEVER increase stake due to perceived certainty.
     - NEVER chase odds or compensate for previous results.
-    - Reduce stake if odds are below 1.60 due to higher variance.
-    - Avoid overexposure: if bankroll is already partially committed, scale stake down.
+    - Reduce stake if odds are below 1.60 (scale down to ~50% of calculated unit).
+    - If bankroll is already partially committed, scale down new stakes to respect the 50% total cap.
+    - Notes:
+       - With these limits, multiple high-confidence bets can cumulatively reach ~50% of the bankroll.
+       - Still maintains risk control via scaling and odds/edge adjustments.
     
     Professional Betting Constraints:
     - Treat each bet as one of hundreds in a long-term portfolio.
@@ -314,45 +314,45 @@ USER_PROMPT = '''
       with the minimum reasonable stake.
     
     Upcoming Match Info:
-     - Home Team: {1}
-     - Away Team: {2}
-     - Date: {3}
+    - Home Team: {home}
+    - Away Team: {away}
+    - Date: {date}
     
-    Recent Form ({1} last matches):
-     - {4}
+    Recent Form ({home} last matches):
+    - {home_last}
     
-    Recent Form ({2} last matches):
-     - {5}
+    Recent Form ({away} last matches):
+    - {away_last}
     
     Betting Odds:
-     - Win {1}: {6}
-     - Draw: {7}
-     - Win {2}: {8}
-     - Over 2.5 Goals: {9}
-     - Under 2.5 Goals: {10}
-     - BTTS Yes: {11}
-     - BTTS No: {12}
+    - Win {home}: {home_rate}
+    - Draw: {draw_rate}
+    - Win {away}: {away_rate}
+    - Over 2.5 Goals: {over}
+    - Under 2.5 Goals: {under}
+    - BTTS Yes: {btts_yes}
+    - BTTS No: {btts_no}
     
     Your Task:
     - Analyze the matchup strictly using the framework above.
     - Determine the single most valuable and risk-controlled bet among:
-         - "{1}" (Home Win)
-         - "{2}" (Away Win)
-         - "Draw"
-         - "Over 2.5 Goals"
-         - "Under 2.5 Goals"
-         - "BTTS Yes"
-         - "BTTS No"
+        - "{home}" (Home Win)
+        - "{away}" (Away Win)
+        - "Draw"
+        - "Over 2.5 Goals"
+        - "Under 2.5 Goals"
+        - "BTTS Yes"
+        - "BTTS No"
     - Select the outcome with the best balance between probability, value, and risk.
     - Calculate an appropriate stake based on bankroll, confidence, and exposure.
     - Write a concise professional comment justifying the decision.
     
     Output Format (STRICT):
-    {
-      "result": "{1} | {2} | Draw | Over 2.5 Goals | Under 2.5 Goals | BTTS Yes | BTTS No",
+    {{
+      "result": "{home} | {away} | Draw | Over 2.5 Goals | Under 2.5 Goals | BTTS Yes | BTTS No",
       "stake": 10,
       "comment": "Clear value identified based on probability edge, controlled risk, and market efficiency."
-    }
+    }}
     
     Critical Constraints:
     - Return ONLY a valid JSON object using double quotes.
@@ -360,4 +360,4 @@ USER_PROMPT = '''
     - Do NOT use single quotes under any circumstances.
     - Do NOT include markdown or code blocks.
     - Stake must respect bankroll and exposure rules.
-'''
+"""
