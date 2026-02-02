@@ -97,6 +97,8 @@ def get_model_prediction(data, model_name, event_count, event_num):
     ).aggregate(total=Sum("bet_amount"))["total"] or 0
     total_balance = model.balance + pending_bets
 
+    print(data)
+
     user_prompt = USER_PROMPT.format(
         balance=total_balance,
         home=data.get("home"),
@@ -168,7 +170,7 @@ def get_match_odds(home, away, league_id):
                         if not title_section:
                             continue
                         title = title_section.text.strip()
-                        if title == "Draw":
+                        if any(title == t for t in [home, away, "Draw"]):
                             result[title_section.text.strip()] = section.find(
                                 "span", {"class": "ui-odds"}
                             ).get("data-decimal")
