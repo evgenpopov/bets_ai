@@ -97,8 +97,6 @@ def get_model_prediction(data, model_name, event_count, event_num):
     ).aggregate(total=Sum("bet_amount"))["total"] or 0
     total_balance = model.balance + pending_bets
 
-    print(data)
-
     user_prompt = USER_PROMPT.format(
         balance=total_balance,
         home=data.get("home"),
@@ -291,9 +289,9 @@ USER_PROMPT = """
     Risk Management & Stake Sizing (Aggressive 50% Cap)
     - Base betting unit = 2% of total bankroll.
     - Stake sizing must follow conservative fractional-Kelly principles:
-      - Low confidence / small edge: 1–2% of bankroll
-      - Medium confidence / solid edge: 3–5% of bankroll
-      - High confidence (rare): maximum 6-10% of bankroll
+      - Low confidence / small edge: 3–5% of bankroll
+      - Medium confidence / solid edge: 6–8% of bankroll
+      - High confidence (rare): maximum 10-15% of bankroll
     - Exposure limit: total active stakes must not exceed 50% of bankroll.
     - NEVER increase stake due to perceived certainty.
     - NEVER chase odds or compensate for previous results.
