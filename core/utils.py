@@ -107,10 +107,6 @@ def get_model_prediction(data, model_name, event_count, event_num):
         home_rate=data.get("home_rate"),
         draw_rate=data.get("draw_rate"),
         away_rate=data.get("away_rate"),
-        over=data.get("over"),
-        under=data.get("under"),
-        btts_yes=data.get("yes"),
-        btts_no=data.get("no"),
         event_count=event_count,
         event_num=event_num
     )
@@ -172,7 +168,7 @@ def get_match_odds(home, away, league_id):
                         if not title_section:
                             continue
                         title = title_section.text.strip()
-                        if any(title == t for t in [home, away, "Draw", "Over 2.50", "Under 2.50", "Yes", "No"]):
+                        if title == "Draw":
                             result[title_section.text.strip()] = section.find(
                                 "span", {"class": "ui-odds"}
                             ).get("data-decimal")
@@ -328,10 +324,6 @@ USER_PROMPT = """
     - Win {home}: {home_rate}
     - Draw: {draw_rate}
     - Win {away}: {away_rate}
-    - Over 2.5 Goals: {over}
-    - Under 2.5 Goals: {under}
-    - BTTS Yes: {btts_yes}
-    - BTTS No: {btts_no}
     
     Your Task:
     - Analyze the matchup strictly using the framework above.
@@ -339,17 +331,13 @@ USER_PROMPT = """
         - "{home}" (Home Win)
         - "{away}" (Away Win)
         - "Draw"
-        - "Over 2.5 Goals"
-        - "Under 2.5 Goals"
-        - "BTTS Yes"
-        - "BTTS No"
     - Select the outcome with the best balance between probability, value, and risk.
     - Calculate an appropriate stake based on bankroll, confidence, and exposure.
     - Write a concise professional comment justifying the decision.
     
     Output Format (STRICT):
     {{
-      "result": "{home} | {away} | Draw | Over 2.5 Goals | Under 2.5 Goals | BTTS Yes | BTTS No",
+      "result": "{home} | {away} | Draw",
       "stake": 10,
       "comment": "Clear value identified based on probability edge, controlled risk, and market efficiency."
     }}

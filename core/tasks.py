@@ -56,10 +56,6 @@ def import_matches_and_predictions():
                 "home_rate": odds_data.get(match.home, "None"),
                 "draw_rate": odds_data.get("Draw", "None"),
                 "away_rate": odds_data.get(match.away, "None"),
-                "over": odds_data.get("Over 2.50", "None"),
-                "under": odds_data.get("Under 2.50", "None"),
-                "yes": odds_data.get("Yes", "None"),
-                "no": odds_data.get("No", "None"),
             }
 
             if Prediction.objects.filter(ai_model=model, match=match).exists():
@@ -81,7 +77,7 @@ def import_matches_and_predictions():
                 predicted_winner=prediction_result,
                 bet_amount=prediction_stake,
                 comment=prediction_comment,
-                odds=odds_data.get(prediction_result.replace(" Goals", "").replace("BTTS ", ""), 1.5),
+                odds=odds_data.get(prediction_result, 1.5),
             )
 
             model.balance -= float(prediction_stake)
