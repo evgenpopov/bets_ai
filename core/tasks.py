@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 from .models import ModelAI, Match, Prediction, BalanceHistory
 from .utils import (get_model_prediction, get_match_odds, get_team_stats, LEAGUES_LIST_ID,
-                    get_matches, get_unfinished_match_data)
+                    get_matches, get_unfinished_match_data, get_odds_by_team_name)
 
 
 @shared_task
@@ -41,21 +41,18 @@ def import_matches_and_predictions():
     for model in models:
         for match_num, match in enumerate(matches):
             odds_data = get_match_odds(match.home, match.away, match.metadata['league']['id'])
+
             if not odds_data:
                 continue
-
-            if not match.odds:
-                match.odds = odds_data
-                match.save()
 
             data = {
                 "balance": model.balance, "home": match.home, "away": match.away,
                 "date": match.date.strftime("%Y-%m-%d"),
                 "home_last_results": match.metadata_home[:3] if match.metadata_home else "",
                 "away_last_results": match.metadata_away[:3] if match.metadata_away else "",
-                "home_rate": odds_data.get(match.home, "None"),
+                "home_rate": get_odds_by_team_name(odds_data, match.home),
                 "draw_rate": odds_data.get("Draw", "None"),
-                "away_rate": odds_data.get(match.away, "None"),
+                "away_rate": get_odds_by_team_name(odds_data, match.away),
             }
 
             if Prediction.objects.filter(ai_model=model, match=match).exists():
@@ -67,6 +64,7 @@ def import_matches_and_predictions():
                 ).replace("```json", "").replace("```", "")
             except:
                 continue
+
             prediction_result = json.loads(prediction_data).get("result")
             prediction_stake = json.loads(prediction_data).get("stake")
             prediction_comment = json.loads(prediction_data).get("comment")

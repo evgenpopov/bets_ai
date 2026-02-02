@@ -168,12 +168,20 @@ def get_match_odds(home, away, league_id):
                         if not title_section:
                             continue
                         title = title_section.text.strip()
-                        if any(title == t for t in [home, away, "Draw"]):
+                        home_contains = home in title or title in home
+                        away_contains = away in title or title in away
+                        if any(title == t for t in [home, away, "Draw"]) or home_contains or away_contains:
                             result[title_section.text.strip()] = section.find(
                                 "span", {"class": "ui-odds"}
                             ).get("data-decimal")
     return result
 
+
+def get_odds_by_team_name(odds_data, team_name):
+    for key, value in odds_data.items():
+        if team_name.lower() in key.lower() or key.lower() in team_name.lower():
+            return value
+    return "None"
 
 
 class AIModels:
@@ -289,9 +297,9 @@ USER_PROMPT = """
     Risk Management & Stake Sizing (Aggressive 50% Cap)
     - Base betting unit = 2% of total bankroll.
     - Stake sizing must follow conservative fractional-Kelly principles:
-      - Low confidence / small edge: 3–5% of bankroll
-      - Medium confidence / solid edge: 6–8% of bankroll
-      - High confidence (rare): maximum 10-15% of bankroll
+      - Low confidence / small edge: 2–4% of bankroll
+      - Medium confidence / solid edge: 5–7% of bankroll
+      - High confidence (rare): maximum 8-10% of bankroll
     - Exposure limit: total active stakes must not exceed 50% of bankroll.
     - NEVER increase stake due to perceived certainty.
     - NEVER chase odds or compensate for previous results.
