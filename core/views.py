@@ -145,10 +145,10 @@ def event_detail(request, event_id):
         }
 
     event_odds = event.odds
-    if 'No' in event_odds:
-        event_odds['BTTS No'] = event_odds.pop('No')
-    if 'Yes' in event_odds:
-        event_odds['BTTS Yes'] = event_odds.pop('Yes')
+    # if 'No' in event_odds:
+    #     event_odds['BTTS No'] = event_odds.pop('No')
+    # if 'Yes' in event_odds:
+    #     event_odds['BTTS Yes'] = event_odds.pop('Yes')
 
     account_type = getattr(request.user, 'profile', None)
     account_type = account_type.account_type if account_type else 'lite'
