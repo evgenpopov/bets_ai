@@ -45,6 +45,10 @@ def import_matches_and_predictions():
             if not odds_data:
                 continue
 
+            if not match.odds or match.odds == "null":
+                match.odds = odds_data
+                match.save()
+
             data = {
                 "balance": model.balance, "home": match.home, "away": match.away,
                 "date": match.date.strftime("%Y-%m-%d"),
