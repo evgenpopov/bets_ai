@@ -228,7 +228,7 @@ class AIModels:
             api_key=os.getenv("GROK_API_KEY"),
             timeout=3600,
         )
-        chat = client.chat.create(model="grok-4")
+        chat = client.chat.create(model="grok-4-fast-reasoning")
         chat.append(system(system_prompt))
         chat.append(user(user_prompt))
         response = chat.sample()
