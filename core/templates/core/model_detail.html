@@ -1,117 +1,110 @@
-<!DOCTYPE html>
+{% extends "core/base.html" %}
 {% load static %}
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>{{ model.name }} • AI Bet Battle</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{% static 'css/model_detail.css' %}">
-  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon.png' %}">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
+{% load i18n %}
 
-<body>
+{% block title %}{{ model.name }} • AI Bet Battle{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/model_detail.css' %}">
+{% endblock %}
+
+{% block content %}
 <div class="container">
 
-<div class="header">
-  <a href="{% url 'index' %}" class="back">Dashboard</a>
-</div>
+  <div class="header">
+    <a href="{% url 'index' %}" class="back">{% trans "Dashboard" %}</a>
+  </div>
 
-<div class="model-card">
-  <div class="model-title">
-    {{ model.name }}
-    {% if model.is_verified %}
-      <span class="verified">✔ Verified AI</span>
+  <div class="model-card">
+    <div class="model-title">
+      {{ model.name }}
+      {% if model.is_verified %}
+        <span class="verified">✔ {% trans "Verified AI" %}</span>
+      {% endif %}
+    </div>
+
+    <div class="balance">${{ display_balance|floatformat:2 }}</div>
+    <div class="pending">{% trans "Pending bets" %}: ${{ pending_bets|floatformat:2 }}</div>
+
+    <div class="stats">
+      <div class="stat">
+        <span>ROI</span>
+        <strong class="{% if roi >= 0 %}positive{% else %}negative{% endif %}">
+          {{ roi|floatformat:1 }}%
+        </strong>
+      </div>
+      <div class="stat">
+        <span>{% trans "Winrate" %}</span>
+        <strong>{{ winrate|floatformat:0 }}%</strong>
+      </div>
+    </div>
+
+    <div class="trust-bar">
+      <div>✔ {% trans "All bets are real" %}</div>
+      <div>✔ {% trans "No manual edits" %}</div>
+      <div>🤖 {% trans "Runs autonomously" %}</div>
+    </div>
+  </div>
+
+  <div class="section-title">{% trans "Bets History" %}</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>{% trans "Date" %}</th>
+          <th>{% trans "Match" %}</th>
+          <th>{% trans "Bet" %}</th>
+          <th>{% trans "Amount" %}</th>
+          <th>{% trans "Rate" %}</th>
+          <th>{% trans "Result" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in predictions %}
+        <tr>
+          <td>{{ p.match.date|date:"d.m.Y" }}</td>
+          <td>
+            <a href="{% url 'event_detail' p.match.id %}">
+              {{ p.match.home }} – {{ p.match.away }}
+            </a>
+          </td>
+          {% if account_type == "lite" and p.result is None %}
+            <td>🔒 {% trans "Upgrade to Premium to see upcoming bets." %}</td>
+            <td></td><td></td><td></td>
+          {% else %}
+            <td>{{ p.predicted_winner }}</td>
+            <td>{{ p.bet_amount|floatformat:0 }}$</td>
+            <td>{{ p.odds|floatformat:2 }}</td>
+            <td class="{% if p.result > 0 %}positive{% elif p.result < 0 %}negative{% endif %}">
+              {% if p.result is not None %}{{ p.result|floatformat:0 }}${% endif %}
+            </td>
+          {% endif %}
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6" class="no-data">{% trans "No predictions yet" %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PAGINATION -->
+  {% if predictions.paginator.num_pages > 1 %}
+  <div class="pagination">
+    {% if predictions.has_previous %}
+      <a href="?page={{ predictions.previous_page_number }}">← {% trans "Prev" %}</a>
+    {% endif %}
+    <span>
+      {% blocktrans with number=predictions.number num_pages=predictions.paginator.num_pages %}
+        Page {{ number }} of {{ num_pages }}
+      {% endblocktrans %}
+    </span>
+    {% if predictions.has_next %}
+      <a href="?page={{ predictions.next_page_number }}">{% trans "Next" %} →</a>
     {% endif %}
   </div>
-
-  <div class="balance">${{ display_balance|floatformat:2 }}</div>
-  <div class="pending">Pending bets: ${{ pending_bets|floatformat:2 }}</div>
-
-  <div class="stats">
-    <div class="stat">
-      <span>ROI</span>
-      <strong class="{% if roi >= 0 %}positive{% else %}negative{% endif %}">
-        {{ roi|floatformat:1 }}%
-      </strong>
-    </div>
-    <div class="stat">
-      <span>Winrate</span>
-      <strong>
-        {{ winrate|floatformat:0 }}%
-      </strong>
-    </div>
-  </div>
-
-  <div class="trust-bar">
-    <div>✔ All bets are real</div>
-    <div>✔ No manual edits</div>
-    <div>🤖 Runs autonomously</div>
-  </div>
-</div>
-
-<div class="section-title">Bets History</div>
-<div class="table-wrap">
-<table>
-<thead>
-<tr>
-  <th>Date</th>
-  <th>Match</th>
-  <th>Bet</th>
-  <th>Amount</th>
-  <th>Rate</th>
-  <th>Result</th>
-</tr>
-</thead>
-<tbody>
-{% for p in predictions %}
-<tr>
-  <td>{{ p.match.date|date:"d.m.Y" }}</td>
-  <td><a href="{% url 'event_detail' p.match.id %}">{{ p.match.home }} – {{ p.match.away }}</a></td>
-  {% if account_type == "lite" and p.result is None %}
-    <td>🔒 Upgrade to Premium to see upcoming bets.</td>
-    <td></td>
-    <td></td>
-    <td></td>
-  {% else %}
-    <td>{{ p.predicted_winner }}</td>
-    <td>{{ p.bet_amount|floatformat:0 }}$</td>
-    <td>{{ p.odds|floatformat:2 }}</td>
-    <td class="{% if p.result > 0 %}positive{% elif p.result < 0 %}negative{% endif %}">
-      {% if p.result is not None %}
-        {{ p.result|floatformat:0 }}$
-      {% endif %}
-    </td>
-  {% endif %}
-</tr>
-{% empty %}
-<tr>
-  <td colspan="6" class="no-data">No predictions yet</td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
-</div>
-
-<!-- Pagination -->
-{% if predictions.paginator.num_pages > 1 %}
-<div class="pagination">
-  {% if predictions.has_previous %}
-    <a href="?page={{ predictions.previous_page_number }}">← Prev</a>
   {% endif %}
 
-  <span>
-    Page {{ predictions.number }} of {{ predictions.paginator.num_pages }}
-  </span>
-
-  {% if predictions.has_next %}
-    <a href="?page={{ predictions.next_page_number }}">Next →</a>
-  {% endif %}
 </div>
-{% endif %}
-
-</div>
-</body>
-</html>
+{% endblock %}

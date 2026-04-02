@@ -1,0 +1,92 @@
+{% extends "core/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Refund Policy" %} • AI Bet Battle{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 860px; padding-top: 40px;">
+
+  <div class="header">
+    <a href="{% url 'index' %}" class="back">{% trans "Dashboard" %}</a>
+  </div>
+
+  <div class="hero" style="margin-bottom: 30px;">
+    <h1>{% trans "Refund Policy" %}</h1>
+    <div class="hero-line"></div>
+  </div>
+
+  <div class="legal-card">
+
+    <p class="legal-meta">{% trans "Effective date" %}: 01.01.2026 &nbsp;•&nbsp; AI Bet Battle</p>
+
+    {% if request.LANGUAGE_CODE == 'uk' %}
+
+      <h2>1. Загальні умови</h2>
+      <p>Premium-підписка є цифровою послугою. Відповідно до законодавства України, цифровий контент не підлягає поверненню після активації, якщо Користувач погодився на негайне надання послуги.</p>
+
+      <h2>2. Випадки повернення коштів</h2>
+      <ul>
+        <li>Оплата пройшла, але Premium-доступ не надано протягом 24 годин — <strong>повне повернення</strong>.</li>
+        <li>Подвійне списання за один період — повернення надлишково списаної суми.</li>
+        <li>Технічна помилка на боці Сервісу — повернення пропорційно до невикористаного часу.</li>
+      </ul>
+
+      <h2>3. Випадки без повернення</h2>
+      <ul>
+        <li>Користувач вже скористався Premium-доступом.</li>
+        <li>З дати оплати минуло більше 14 днів.</li>
+        <li>Акаунт заблоковано через порушення Угоди.</li>
+      </ul>
+
+      <h2>4. Як подати заявку</h2>
+      <p>Надішліть листа на <a href="mailto:info@magnet.kiev.ua">info@magnet.kiev.ua</a>, вказавши:</p>
+      <ul>
+        <li>Логін або email акаунту</li>
+        <li>Дату та суму оплати</li>
+        <li>Причину звернення</li>
+      </ul>
+      <p>Термін розгляду — <strong>5 робочих днів</strong>. Повернення на рахунок — протягом <strong>7–10 робочих днів</strong>.</p>
+
+      <h2>5. Контакти</h2>
+      <p>
+        Email: <a href="mailto:info@magnet.kiev.ua">info@magnet.kiev.ua</a><br>
+      </p>
+
+    {% else %}
+
+      <h2>1. General Terms</h2>
+      <p>The Premium subscription is a digital service. Under Ukrainian law, digital content is non-refundable after activation if the User consented to immediate service delivery.</p>
+
+      <h2>2. Eligible Refund Cases</h2>
+      <ul>
+        <li>Payment succeeded but Premium access was not granted within 24 hours — <strong>full refund</strong>.</li>
+        <li>Duplicate charge for the same period — refund of the excess amount.</li>
+        <li>Technical error on the Service side — pro-rated refund for unused time.</li>
+      </ul>
+
+      <h2>3. Non-Refundable Cases</h2>
+      <ul>
+        <li>The User has already used Premium features.</li>
+        <li>More than 14 days have passed since the payment date.</li>
+        <li>The account was suspended due to Agreement violations.</li>
+      </ul>
+
+      <h2>4. How to Request a Refund</h2>
+      <p>Send an email to <a href="mailto:info@magnet.kiev.ua">info@magnet.kiev.ua</a> with:</p>
+      <ul>
+        <li>Your account login or email</li>
+        <li>Payment date and amount</li>
+        <li>Reason for the request</li>
+      </ul>
+      <p>We review requests within <strong>5 business days</strong>. Refunds are processed within <strong>7–10 business days</strong>.</p>
+
+      <h2>5. Contact</h2>
+      <p>
+        Email: <a href="mailto:info@magnet.kiev.ua">info@magnet.kiev.ua</a><br>
+      </p>
+
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

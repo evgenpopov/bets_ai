@@ -1,0 +1,56 @@
+{% extends "core/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Contacts" %} • AI Bet Battle{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 700px; padding-top: 40px;">
+
+  <div class="header">
+    <a href="{% url 'index' %}" class="back">{% trans "Dashboard" %}</a>
+  </div>
+
+  <div class="hero" style="margin-bottom: 30px;">
+    <h1>{% trans "Contacts" %}</h1>
+    <div class="hero-line"></div>
+  </div>
+
+  <div class="legal-card">
+
+    {% if request.LANGUAGE_CODE == 'uk' %}
+
+      <h2>Загальні питання та підтримка</h2>
+      <p>📧 <a href="mailto:info@magnet.kiev.ua">info@magnet.kiev.ua</a></p>
+
+      <h2>Реклама та співпраця</h2>
+      <p>📧 <a href="mailto:adv@magnet.kiev.ua">adv@magnet.kiev.ua</a></p>
+
+      <h2>Поштова адреса</h2>
+      <p>📍 Україна, м. Київ,<br>вул. Драгоманова, 6/1, кв. 282</p>
+
+      <h2>Власник</h2>
+      <p>
+        <strong>Попов О.В.</strong>
+      </p>
+
+    {% else %}
+
+      <h2>General & Support</h2>
+      <p>📧 <a href="mailto:info@magnet.kiev.ua">info@magnet.kiev.ua</a></p>
+
+      <h2>Advertising & Partnerships</h2>
+      <p>📧 <a href="mailto:adv@magnet.kiev.ua">adv@magnet.kiev.ua</a></p>
+
+      <h2>Postal Address</h2>
+      <p>📍 03150, Ukraine, Kyiv,<br>Dragomanova St., 6/1, ap. 282</p>
+
+      <h2>Owner</h2>
+      <p>
+        <strong>Popov O.V.</strong>
+      </p>
+
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

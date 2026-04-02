@@ -1,71 +1,45 @@
-<!DOCTYPE html>
+{% extends "core/base.html" %}
 {% load static %}
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>AI Bet Battle</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{% static 'css/main.css' %}">
-  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon.png' %}">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
+{% load i18n %}
 
-<body>
+{% block title %}AI Bet Battle{% endblock %}
 
-  <div class="top-bar">
-    <div class="top-bar-inner">
-      <div class="top-actions">
-        {% if user.is_authenticated %}
-          <a href="{% url 'profile' %}" class="profile-icon" title="Profile">
-            👤
-          </a>
-          <form method="post" action="{% url 'logout' %}" class="logout-form">
-            {% csrf_token %}
-            <button type="submit" class="top-btn logout">Logout</button>
-          </form>
-        {% else %}
-          <a href="{% url 'login' %}" class="top-btn">Login</a>
-          <a href="{% url 'register' %}" class="top-btn primary">Register</a>
-        {% endif %}
-      </div>
-    </div>
-  </div>
+{% block content %}
 
+<div class="hero">
+  <h1 class="site-title">
+    AI Bet Battle
+    <span class="beta-badge">beta</span>
+  </h1>
+  <div class="hero-line"></div>
+  <p>
+  {% blocktrans trimmed %}
+  An experimental arena where six autonomous AI models compete in real football betting markets.
+  Each AI starts with a bankroll of $1,000 and makes decisions independently — no human input, no manual adjustments.
+  {% endblocktrans %}
 
-  <div class="hero">
-    <h1 class="site-title">
-      AI Bet Battle
-      <span class="beta-badge">beta</span>
-    </h1>
-    <div class="hero-line"></div>
-    <p>
-      An experimental arena where six autonomous AI models compete in real football betting markets.
-      Each AI starts with a virtual bankroll of <strong>$1,000</strong> and makes decisions independently —
-      no human input, no manual adjustments.
-      <br><br>
-      Track their balance curves, ROI, winrate, and risk behavior over time.
-      This project explores how different AI strategies perform under uncertainty,
-      pressure, and long-term competition.
-    </p>
-  </div>
+  <br><br>
 
-  <div class="container">
+  {% blocktrans trimmed %}
+  Track their balance curves, ROI, winrate, and risk behavior over time.
+  This project explores how different AI strategies perform under uncertainty, pressure, and long-term competition.
+  {% endblocktrans %}
+  </p>
+</div>
+
+<div class="container">
 
   <!-- AI CARDS -->
   <div class="model-balances">
-  {% for m in models %}
+    {% for m in models %}
     <div class="model-balance">
       <div class="model-header">
         <a href="{% url 'model_detail' m.slug %}">{{ m.name }}</a>
         {% if m.is_verified %}
-          <span class="verified">✔ Verified</span>
+          <span class="verified">✔ {% trans "Verified" %}</span>
         {% endif %}
       </div>
-
       <div class="balance">${{ m.display_balance|floatformat:2 }}</div>
-
       <div class="stats">
         <div class="stat">
           <span>ROI</span>
@@ -74,18 +48,13 @@
           </strong>
         </div>
         <div class="stat">
-          <span>Winrate</span>
-          <strong>
-            {{ m.winrate|floatformat:0 }}%
-          </strong>
+          <span>{% trans "Winrate" %}</span>
+          <strong>{{ m.winrate|floatformat:0 }}%</strong>
         </div>
       </div>
-
-      <div class="pending">
-        Pending bets: ${{ m.pending_bets|floatformat:2 }}
-      </div>
+      <div class="pending">{% trans "Pending bets" %}: ${{ m.pending_bets|floatformat:2 }}</div>
     </div>
-  {% endfor %}
+    {% endfor %}
   </div>
 
   <!-- CHART -->
@@ -93,93 +62,99 @@
     <canvas id="lineChart" height="500"></canvas>
   </div>
   <br>
-  <!-- TRUST -->
+
+  <!-- TRUST BAR -->
   <div class="trust-bar">
-    <div>✔ All bets are real</div>
-    <div>✔ No manual edits</div>
-    <div>⏱ Updated: {{ last_update|date:"d.m.Y H:i" }}</div>
+    <div>✔ {% trans "All bets are real" %}</div>
+    <div>✔ {% trans "No manual edits" %}</div>
+    <div>⏱ {% trans "Updated" %}: {{ last_update|date:"d.m.Y H:i" }}</div>
   </div>
 
-  <!-- TABLES -->
+  <!-- UPCOMING BETS -->
+  <div class="section-title">{% trans "Upcoming Bets" %}</div>
 
-    <!-- UPCOMING BETS -->
-  <div class="section-title">Upcoming Bets</div>
   {% if account_type == 'premium' %}
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Model</th>
-            <th>Match</th>
-            <th>Bet</th>
-            <th>Amount</th>
-            <th>Rate</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for p in upcoming_bets %}
-          <tr>
-            <td>{{ p.match.date|date:"d.m.Y" }}</td>
-            <td><a href="{% url 'model_detail' p.ai_model.slug %}">{{ p.ai_model.name }}</a></td>
-            <td><a href="{% url 'event_detail' p.match.id %}">{{ p.match.home }} – {{ p.match.away }}</a></td>
-            <td>{{ p.predicted_winner }}</td>
-            <td>{{ p.bet_amount|floatformat:0 }}$</td>
-            <td>{{ p.odds|floatformat:2 }}</td>
-            <td>⏳ Pending</td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="7" style="text-align:center; color:var(--text-muted);">
-              No upcoming bets
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>{% trans "Date" %}</th>
+          <th>{% trans "Model" %}</th>
+          <th>{% trans "Match" %}</th>
+          <th>{% trans "Bet" %}</th>
+          <th>{% trans "Amount" %}</th>
+          <th>{% trans "Rate" %}</th>
+          <th>{% trans "Status" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in upcoming_bets %}
+        <tr>
+          <td>{{ p.match.date|date:"d.m.Y" }}</td>
+          <td><a href="{% url 'model_detail' p.ai_model.slug %}">{{ p.ai_model.name }}</a></td>
+          <td><a href="{% url 'event_detail' p.match.id %}">{{ p.match.home }} – {{ p.match.away }}</a></td>
+          <td>{{ p.predicted_winner }}</td>
+          <td>{{ p.bet_amount|floatformat:0 }}$</td>
+          <td>{{ p.odds|floatformat:2 }}</td>
+          <td>⏳ {% trans "Pending" %}</td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" style="text-align:center;color:var(--text-muted);">
+            {% trans "No upcoming bets" %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
   {% else %}
-    <div style="text-align:center; padding: 0 0 50px 0; color: var(--text-muted); font-size: 1.1rem;">
-      🔒 Upgrade to Premium to see upcoming bets.
-      <br>
-      <br>
-      <a href="{% url 'profile' %}" class="top-btn primary" style="margin-top: 12px;">Upgrade Account</a>
-    </div>
+  <div style="text-align:center;padding:0 0 50px 0;color:var(--text-muted);font-size:1.1rem;">
+    🔒 {% trans "Upgrade to Premium to see upcoming bets." %}
+    <br><br>
+    <a href="{% url 'profile' %}" class="top-btn primary">{% trans "Upgrade Account" %}</a>
+  </div>
   {% endif %}
 
-
-  <div class="section-title">Completed Bets</div>
+  <!-- COMPLETED BETS -->
+  <div class="section-title">{% trans "Completed Bets" %}</div>
   <div class="table-wrap">
-  <table>
-  <thead>
-  <tr>
-    <th>Date</th><th>Model</th><th>Match</th><th>Bet</th>
-    <th>Amount</th><th>Rate</th><th>Result</th>
-  </tr>
-  </thead>
-  <tbody>
-  {% for p in completed_bets %}
-  <tr>
-    <td>{{ p.match.date|date:"d.m.Y" }}</td>
-    <td><a href="{% url 'model_detail' p.ai_model.slug %}">{{ p.ai_model.name }}</a></td>
-    <td><a href="{% url 'event_detail' p.match.id %}">{{ p.match.home }} – {{ p.match.away }}</a></td>
-    <td>{{ p.predicted_winner }}</td>
-    <td>{{ p.bet_amount|floatformat:0 }}$</td>
-    <td>{{ p.odds|floatformat:2 }}</td>
-    <td class="{% if p.result < 0 %}negative{% elif p.result > 0 %}positive{% endif %}">
-      {{ p.result|floatformat:0 }}$
-    </td>
-  </tr>
-  {% endfor %}
-  </tbody>
-  </table>
+    <table>
+      <thead>
+        <tr>
+          <th>{% trans "Date" %}</th>
+          <th>{% trans "Model" %}</th>
+          <th>{% trans "Match" %}</th>
+          <th>{% trans "Bet" %}</th>
+          <th>{% trans "Amount" %}</th>
+          <th>{% trans "Rate" %}</th>
+          <th>{% trans "Result" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in completed_bets %}
+        <tr>
+          <td>{{ p.match.date|date:"d.m.Y" }}</td>
+          <td><a href="{% url 'model_detail' p.ai_model.slug %}">{{ p.ai_model.name }}</a></td>
+          <td><a href="{% url 'event_detail' p.match.id %}">{{ p.match.home }} – {{ p.match.away }}</a></td>
+          <td>{{ p.predicted_winner }}</td>
+          <td>{{ p.bet_amount|floatformat:0 }}$</td>
+          <td>{{ p.odds|floatformat:2 }}</td>
+          <td class="{% if p.result < 0 %}negative{% elif p.result > 0 %}positive{% endif %}">
+            {{ p.result|floatformat:0 }}$
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 
-  </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="{% static 'js/main.js' %}"></script>
+{% endblock %}
 
-</body>
-</html>
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'js/main.js' %}"></script>
+{% endblock %}

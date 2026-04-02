@@ -39,7 +39,7 @@ class Command(BaseCommand):
 
         for model in models:
             for match in matches:
-                odds_data = get_match_odds(match.home, match.away, match.metadata['league']['id'])
+                odds_data = get_match_odds(match.home, match.away, match.metadata['fixture']['id'])
                 if not odds_data:
                     continue
                 data = {

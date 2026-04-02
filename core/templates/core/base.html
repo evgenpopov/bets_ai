@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+{% load static %}
+{% load i18n %}
+<html lang="{{ LANGUAGE_CODE }}">
+  <head>
+    <meta charset="UTF-8">
+    <title>{% block title %}AI Bet Battle{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon.png' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    {% block extra_css %}{% endblock %}
+  </head>
+  <body>
+
+    <!-- ===== TOP BAR ===== -->
+    <div class="top-bar">
+      <div class="top-bar-inner">
+
+        <div></div>
+
+        <div class="top-actions">
+
+          <form action="{% url 'set_language' %}" method="post" class="lang-switch">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.path }}">
+            <button name="language" value="en" class="{% if LANGUAGE_CODE == 'en' %}active{% endif %}">EN</button>
+            <button name="language" value="uk" class="{% if LANGUAGE_CODE == 'uk' %}active{% endif %}">UA</button>
+          </form>
+
+          {% if user.is_authenticated %}
+            <a href="{% url 'profile' %}" class="profile-icon" title="{% trans 'Profile' %}">👤</a>
+            <form method="post" action="{% url 'logout' %}" class="logout-form">
+              {% csrf_token %}
+              <button type="submit" class="top-btn logout">{% trans "Logout" %}</button>
+            </form>
+          {% else %}
+            <a href="{% url 'login' %}" class="top-btn">{% trans "Login" %}</a>
+            <a href="{% url 'register' %}" class="top-btn primary">{% trans "Register" %}</a>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== CONTENT ===== -->
+    {% block content %}{% endblock %}
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="site-footer">
+      <div class="footer-inner">
+
+        <div class="footer-col">
+          <div class="footer-logo">AI Bet Battle</div>
+          <div class="footer-desc">
+            Експериментальна арена, де автономні AI-моделі змагаються у ставках на футбол.
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <div class="footer-heading">{% trans "Navigation" %}</div>
+          <a href="{% url 'index' %}">{% trans "Dashboard" %}</a>
+          <a href="{% url 'subscription' %}">{% trans "Subscription" %}</a>
+          <a href="{% url 'contacts' %}">{% trans "Contacts" %}</a>
+        </div>
+
+        <div class="footer-col">
+          <div class="footer-heading">{% trans "Legal" %}</div>
+          <a href="{% url 'terms' %}">{% trans "Terms of Service" %}</a>
+          <a href="{% url 'refund' %}">{% trans "Refund Policy" %}</a>
+        </div>
+
+        <div class="footer-col">
+          <div class="footer-heading">{% trans "Contacts" %}</div>
+          <span><a href="mailto:info@magnet.kiev.ua">info@magnet.kiev.ua</a></span>
+          {% if request.LANGUAGE_CODE == 'uk' %}
+            <span>Україна, м. Київ,<br>вул. Драгоманова, 6/1,<br>кв. 282</span>
+          {% else %}
+            <span>Ukraine, Kyiv,,<br>Dragomanova St., 6/1, ap. 282</span>
+          {% endif %}
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <span>© 2026 AI Bet Battle</span>
+      </div>
+
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

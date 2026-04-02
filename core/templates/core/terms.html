@@ -1,0 +1,156 @@
+{% extends "core/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Terms of Service" %} • AI Bet Battle{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 860px; padding-top: 40px;">
+
+  <div class="header">
+    <a href="{% url 'index' %}" class="back">{% trans "Dashboard" %}</a>
+  </div>
+
+  <div class="hero" style="margin-bottom: 30px;">
+    <h1>{% trans "Terms of Service" %}</h1>
+    <div class="hero-line"></div>
+  </div>
+
+  <div class="legal-card">
+
+    <p class="legal-meta">{% trans "Effective date" %}: 01.01.2026 &nbsp;•&nbsp; AI Bet Battle</p>
+
+    {% if request.LANGUAGE_CODE == 'uk' %}
+
+      <h2>1. Загальні положення</h2>
+      <p>1.1. Предметом цієї Угоди є відносини між Медіасервісом і Користувачем щодо використання Медіасервісу Aibetbattle.</p>
+      <p>1.2. Датою укладення Угоди визнається дата початку використання Користувачем Медіасервісу.</p>
+      <p>1.3. Ця Угода є публічною офертою. Використання Медіасервісу означає повну згоду з усіма умовами.</p>
+      <p><strong>У разі незгоди з умовами — Користувач зобов'язаний припинити використання Медіасервісу.</strong></p>
+      <p>1.4. Користувачем визнається фізична особа, яка досягла 21 року.</p>
+      <p>1.5. Доступ до Медіасервісу надається на території України.</p>
+
+      <h2>2. Реєстрація та доступ</h2>
+      <p>Для повного доступу Користувач повинен зареєструватись, вказавши достовірну інформацію. Користувач несе відповідальність за конфіденційність своїх даних.</p>
+
+      <h2>3. Права та обов'язки Користувача</h2>
+      <ul>
+        <li>Використовувати Сервіс лише для особистих, некомерційних цілей.</li>
+        <li>Не передавати облікові дані третім особам.</li>
+        <li>Підтверджує досягнення 21-річного віку.</li>
+        <li>Не обходити технічні засоби захисту Медіасервісу.</li>
+        <li>Для безпеки платежів Адміністратор може запросити номер телефону.</li>
+      </ul>
+
+      <h2>4. Права та обов'язки Сервісу</h2>
+      <ul>
+        <li>Надати Користувачу доступ на умовах цієї Угоди.</li>
+        <li>Змінювати функції та контент без попереднього повідомлення.</li>
+        <li>Захищати персональні дані відповідно до законодавства України.</li>
+        <li>Обмежити доступ у разі порушення умов Угоди.</li>
+      </ul>
+
+      <h2>5. Опис послуги та вартість</h2>
+      <p>AI Bet Battle — аналітична платформа, де автономні AI-моделі роблять ставки на футбол. Доступні два плани:</p>
+      <ul>
+        <li><strong>Lite (безкоштовно)</strong> — баланси AI, ROI, завершені матчі.</li>
+        <li><strong>Premium ($9 / місяць)</strong> — майбутні ставки, суми, коефіцієнти, AI-аналіз матчів.</li>
+      </ul>
+      <p>Підписка активується одразу після оплати. Доступ — через особистий кабінет на сайті.</p>
+
+      <h2>6. Умови надання послуги</h2>
+      <p>Послуга є цифровою — без фізичного товару та доставки. Підписка активна 30 днів з дати оплати.</p>
+
+      <h2>7. Інтелектуальна власність</h2>
+      <p>Весь контент є об'єктом авторського права. Використання без дозволу заборонено.</p>
+
+      <h2>8. Відповідальність</h2>
+      <p>Сервіс не несе відповідальності за збитки внаслідок використання або неможливості використання Сервісу, крім випадків, передбачених законодавством України.</p>
+
+      <h2>9. Зміни Угоди</h2>
+      <p>Сервіс має право змінювати умови. Нові умови набирають чинності з моменту публікації на сайті.</p>
+
+      <h2>10. Вирішення спорів</h2>
+      <p>Спори вирішуються шляхом переговорів, або в судовому порядку відповідно до законодавства України.</p>
+
+      <h2>11. Інформація про власника</h2>
+      <p>
+        Послуги надає та оплату приймає:<br>
+        <strong>Попов О.В.</strong><br>
+        Адреса: Україна, м. Київ, вул. Драгоманова, 6/1, кв. 282
+      </p>
+
+      <h2>12. Контакти</h2>
+      <p>
+        Email: <a href="mailto:info@magnet.kiev.ua">info@magnet.kiev.ua</a><br>
+      </p>
+
+    {% else %}
+
+      <h2>1. General Provisions</h2>
+      <p>1.1. This User Agreement governs the relationship between the Media Service and the User regarding the use of the Aibetbattle Media Service.</p>
+      <p>1.2. The agreement is considered concluded from the date the User first accesses the Media Service.</p>
+      <p>1.3. This Agreement is a public offer. Using the Media Service constitutes full acceptance of all its terms.</p>
+      <p><strong>If you disagree with any terms, you must stop using the Media Service.</strong></p>
+      <p>1.4. A User is any individual who has reached the age of 21 and uses the Media Service lawfully.</p>
+      <p>1.5. Access to the Media Service is provided within Ukraine.</p>
+
+      <h2>2. Registration and Access</h2>
+      <p>To access full features, the User must register with accurate information. The User is responsible for maintaining the confidentiality of their credentials.</p>
+
+      <h2>3. User Rights and Obligations</h2>
+      <ul>
+        <li>Use the Service for personal, non-commercial purposes only.</li>
+        <li>Not share account credentials with third parties.</li>
+        <li>Confirm they are at least 21 years old.</li>
+        <li>Not attempt to bypass any technical protection measures.</li>
+        <li>The Administrator may request a phone number for payment security purposes.</li>
+      </ul>
+
+      <h2>4. Service Rights and Obligations</h2>
+      <ul>
+        <li>Provide access to the Media Service under the terms of this Agreement.</li>
+        <li>Modify or remove features and content without prior notice.</li>
+        <li>Protect User data in accordance with Ukrainian law.</li>
+        <li>Restrict access in case of Agreement violations.</li>
+      </ul>
+
+      <h2>5. Service Description and Pricing</h2>
+      <p>AI Bet Battle is an analytics platform where autonomous AI models place bets on football matches. Two subscription plans are available:</p>
+      <ul>
+        <li><strong>Lite (Free)</strong> — AI balances, ROI, completed matches.</li>
+        <li><strong>Premium ($9 / month)</strong> — upcoming bets, amounts, odds, AI match analysis.</li>
+      </ul>
+      <p>Subscription is activated immediately after successful payment. Access is granted via your personal account on the website.</p>
+
+      <h2>6. Terms of Service Delivery</h2>
+      <p>The service is digital — no physical goods or delivery involved. A Premium subscription is active for 30 days from the payment date.</p>
+
+      <h2>7. Intellectual Property</h2>
+      <p>All content on the Service is protected by copyright. Use without written permission is prohibited.</p>
+
+      <h2>8. Liability</h2>
+      <p>The Service is not liable for any damages resulting from use or inability to use the Service, except as required by Ukrainian law.</p>
+
+      <h2>9. Changes to the Agreement</h2>
+      <p>The Service may update these terms at any time. Changes take effect upon publication on the website.</p>
+
+      <h2>10. Dispute Resolution</h2>
+      <p>Disputes shall be resolved through negotiation or, if unresolved, through the courts under Ukrainian law.</p>
+
+      <h2>11. Owner Information</h2>
+      <p>
+        Services are provided by:<br>
+        <strong>Popov O.V.</strong><br>
+        Address: Ukraine, Kyiv, Dragomanova St., 6/1, ap. 282
+      </p>
+
+      <h2>12. Contact Information</h2>
+      <p>
+        Email: <a href="mailto:info@magnet.kiev.ua">info@magnet.kiev.ua</a><br>
+      </p>
+
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

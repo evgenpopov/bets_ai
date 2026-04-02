@@ -137,43 +137,26 @@ def get_scraper_api_response(url, render_js=False):
     return None
 
 
-def get_match_odds(home, away, league_id):
-    LEAGUES_ODDS_MAP = {
-        '2': 'https://www.olbg.com/betting-tips/Football/UEFA_Competitions/Champions_League/1',
-        '3': 'https://www.olbg.com/betting-tips/Football/UEFA_Competitions/Europa_League/1',
-        '32': 'https://www.olbg.com/betting-tips/Football/International/World_Cup_Finals/1',
-        '39': 'https://www.olbg.com/betting-tips/Football/UK/England_Premier_League/1',
-        '61': 'https://www.olbg.com/betting-tips/Football/European_Competitions/France_Ligue_1/1',
-        '78': 'https://www.olbg.com/betting-tips/Football/European_Competitions/Germany_Bundesliga_I/1',
-        '135': 'https://www.olbg.com/betting-tips/Football/European_Competitions/Italy_Serie_A/1',
-        '140': 'https://www.olbg.com/betting-tips/Football/European_Competitions/Spain_Primera_Liga/1',
-        '848': 'https://www.olbg.com/betting-tips/Football/UEFA_Competitions/UEFA_Europa_Conference_League/1',
-    }
-
+def get_match_odds(home, away, fixture_id):
+    response = requests.get(
+        f"https://api-football-v1.p.rapidapi.com/v3/odds?fixture={fixture_id}",
+        headers={
+            "x-rapidapi-key": os.getenv("RAPIDAPI_KEY"),
+            "x-rapidapi-host": os.getenv("RAPIDAPI_HOST")
+        }
+    ).json()['response']
+    if not response:
+        return response
     result = {}
-    response = requests.get(LEAGUES_ODDS_MAP[str(league_id)])
-    soup = BeautifulSoup(response.content, "html.parser")
-    for match in soup.find_all("a"):
-        event_name_block = match.find("h5")
-        if event_name_block:
-            event_name = event_name_block.text
-            if home in event_name or away in event_name:
-                response = requests.get(match.get("href"))
-                soup = BeautifulSoup(response.content, "html.parser")
-                main_block = soup.find_all("div", {"class": "expanded"})[:3]
-                for block in main_block:
-                    odds_category = block.find_all("a")
-                    for section in odds_category:
-                        title_section = section.find("h4")
-                        if not title_section:
-                            continue
-                        title = title_section.text.strip()
-                        home_contains = home in title or title in home
-                        away_contains = away in title or title in away
-                        if any(title == t for t in [home, away, "Draw"]) or home_contains or away_contains:
-                            result[title_section.text.strip()] = section.find(
-                                "span", {"class": "ui-odds"}
-                            ).get("data-decimal")
+
+    for bookmaker in response[0]['bookmakers']:
+        if bookmaker['id'] == 11: # 1xBet
+            for bets in bookmaker['bets']:
+                if bets['id'] == 1: # Match Winner
+                     result[home] = bets['values'][0]['odd']
+                     result["Draw"] = bets['values'][1]['odd']
+                     result[away] = bets['values'][2]['odd']
+
     return result
 
 

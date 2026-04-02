@@ -35,12 +35,12 @@ def import_matches_and_predictions():
                 }
             )
 
-    matches = Match.objects.filter(winner__isnull=True)
+    matches = Match.objects.filter(winner__isnull=True, date__gte=tomorrow.date()).distinct()
     models = ModelAI.objects.all()
 
     for model in models:
         for match_num, match in enumerate(matches):
-            odds_data = get_match_odds(match.home, match.away, match.metadata['league']['id'])
+            odds_data = get_match_odds(match.home, match.away, match.metadata['fixture']['id'])
 
             if not odds_data:
                 continue

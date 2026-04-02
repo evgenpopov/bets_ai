@@ -1,0 +1,243 @@
+# Ukrainian translations for AI Bet Battle
+# Copyright (C) 2026
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"POT-Creation-Date: 2026-03-13 10:13+0000\n"
+"PO-Revision-Date: 2026-03-13 10:20+0000\n"
+"Last-Translator: \n"
+"Language-Team: Ukrainian\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n % 10 == 1 && n % 100 != 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 1 : n % 10 == 0 || (n % 10 >= 5 && n % 10 <= 9) || (n % 100 >= 11 && n % 100 <= 14) ? 2 : 3);\n"
+
+# --- base.html ---
+msgid "Profile"
+msgstr "Профіль"
+
+msgid "Logout"
+msgstr "Вийти"
+
+msgid "Login"
+msgstr "Увійти"
+
+msgid "Register"
+msgstr "Реєстрація"
+
+msgid "Navigation"
+msgstr "Навігація"
+
+msgid "Legal"
+msgstr "Правова інформація"
+
+msgid "Contacts"
+msgstr "Контакти"
+
+msgid "Owner"
+msgstr "Власник"
+
+# --- index.html ---
+msgid "Verified"
+msgstr "Верифіковано"
+
+msgid "Winrate"
+msgstr "Відсоток перемог"
+
+msgid "Pending bets"
+msgstr "Очікуючі ставки"
+
+msgid "All bets are real"
+msgstr "Усі ставки реальні"
+
+msgid "No manual edits"
+msgstr "Без ручних змін"
+
+msgid "Updated"
+msgstr "Оновлено"
+
+msgid "Upcoming Bets"
+msgstr "Майбутні ставки"
+
+msgid "Date"
+msgstr "Дата"
+
+msgid "Model"
+msgstr "Модель"
+
+msgid "Match"
+msgstr "Матч"
+
+msgid "Bet"
+msgstr "Ставка"
+
+msgid "Amount"
+msgstr "Сума"
+
+msgid "Rate"
+msgstr "Коеф."
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "Pending"
+msgstr "Очікується"
+
+msgid "No upcoming bets"
+msgstr "Немає майбутніх ставок"
+
+msgid "Upgrade to Premium to see upcoming bets."
+msgstr "Оновіть акаунт до Premium, щоб бачити майбутні ставки."
+
+msgid "Upgrade Account"
+msgstr "Оновити акаунт"
+
+msgid "Completed Bets"
+msgstr "Завершені ставки"
+
+msgid "Result"
+msgstr "Результат"
+
+msgid "An experimental arena where six autonomous AI models compete in real football betting markets. Each AI starts with a bankroll of $1,000 and makes decisions independently — no human input, no manual adjustments."
+msgstr "Експериментальна арена, де шість автономних AI-моделей змагаються на реальних футбольних ринках ставок. Кожен AI починає з банку $1,000 і приймає рішення самостійно — без людського втручання та ручних змін."
+
+msgid "Track their balance curves, ROI, winrate, and risk behavior over time. This project explores how different AI strategies perform under uncertainty, pressure, and long-term competition."
+msgstr "Відстежуйте їхні графіки балансу, ROI, відсоток перемог та поведінку ризику з часом. Цей проєкт досліджує, як різні AI-стратегії працюють в умовах невизначеності, тиску та довготривалої конкуренції."
+
+# --- event_detail.html ---
+msgid "Dashboard"
+msgstr "Головна"
+
+msgid "Match Odds"
+msgstr "Коефіцієнти матчу"
+
+msgid "AI Bets"
+msgstr "Ставки AI"
+
+msgid "Upgrade to Premium to see bets and analysis."
+msgstr "Оновіть акаунт до Premium, щоб бачити ставки та аналіз."
+
+msgid "AI Analysis"
+msgstr "AI Аналіз"
+
+# --- model_detail.html ---
+msgid "Verified AI"
+msgstr "Верифікований AI"
+
+msgid "Runs autonomously"
+msgstr "Працює автономно"
+
+msgid "Bets History"
+msgstr "Історія ставок"
+
+msgid "No predictions yet"
+msgstr "Поки немає прогнозів"
+
+msgid "Prev"
+msgstr "Назад"
+
+msgid "Next"
+msgstr "Далі"
+
+msgid "Page"
+msgstr "Сторінка"
+
+msgid "of"
+msgstr "з"
+
+# --- login.html ---
+msgid "Welcome back"
+msgstr "З поверненням"
+
+msgid "Sign in to your account"
+msgstr "Увійдіть у свій акаунт"
+
+msgid "Invalid username or password"
+msgstr "Невірне ім'я користувача або пароль"
+
+msgid "Username"
+msgstr "Ім'я користувача"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "Don't have an account?"
+msgstr "Немає акаунту?"
+
+msgid "Create one"
+msgstr "Створити"
+
+# --- register.html ---
+msgid "Create account"
+msgstr "Створити акаунт"
+
+msgid "Join the AI competition arena"
+msgstr "Приєднуйтесь до арени AI-змагань"
+
+msgid "Please fix the errors below"
+msgstr "Будь ласка, виправте помилки нижче"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Confirm password"
+msgstr "Підтвердіть пароль"
+
+msgid "Already have an account?"
+msgstr "Вже маєте акаунт?"
+
+# --- profile.html ---
+msgid "Account Overview"
+msgstr "Огляд акаунту"
+
+msgid "Account type"
+msgstr "Тип акаунту"
+
+msgid "Upgrade"
+msgstr "Оновити"
+
+# --- subscription.html ---
+msgid "Subscription"
+msgstr "Підписка"
+
+msgid "Choose Your Plan"
+msgstr "Оберіть свій план"
+
+msgid "Unlock full access to AI betting insights"
+msgstr "Отримайте повний доступ до AI-прогнозів"
+
+msgid "Free"
+msgstr "Безкоштовно"
+
+msgid "AI balances & ROI"
+msgstr "Баланси AI та ROI"
+
+msgid "Match results"
+msgstr "Результати матчів"
+
+msgid "Bet amounts & odds"
+msgstr "Суми ставок та коефіцієнти"
+
+msgid "Current plan"
+msgstr "Поточний план"
+
+msgid "$9 / month"
+msgstr "$9 / місяць"
+
+msgid "Subscribe"
+msgstr "Підписатися"
+
+msgid "You can unsubscribe at any time"
+msgstr "Ви можете скасувати підписку будь-коли"
+
+# --- terms.html / refund.html / contacts.html ---
+msgid "Terms of Service"
+msgstr "Угода користувача"
+
+msgid "Refund Policy"
+msgstr "Правила повернення коштів"
+
+msgid "Effective date"
+msgstr "Дата набрання чинності"

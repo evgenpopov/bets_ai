@@ -230,3 +230,12 @@ def subscription(request):
     return render(request, 'core/subscription.html', {
         'profile': profile
     })
+
+def terms(request):
+    return render(request, 'core/terms.html')
+
+def refund(request):
+    return render(request, 'core/refund.html')
+
+def contacts(request):
+    return render(request, 'core/contacts.html')

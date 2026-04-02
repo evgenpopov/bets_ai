@@ -16,4 +16,8 @@ urlpatterns = [
     path('profile/', views.profile_view, name='profile'),
 
     path('subscription/', views.subscription, name='subscription'),
+
+    path('terms/', views.terms, name='terms'),
+    path('refund/', views.refund, name='refund'),
+    path('contacts/', views.contacts, name='contacts'),
 ]

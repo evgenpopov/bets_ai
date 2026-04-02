@@ -1,28 +1,23 @@
-<!DOCTYPE html>
+{% extends "core/base.html" %}
 {% load static core %}
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>{{ match.home }} vs {{ match.away }} • AI Bet Battle</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{% static 'css/event_detail.css' %}">
-  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon.png' %}">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
+{% load i18n %}
 
-<body>
+{% block title %}{{ match.home }} vs {{ match.away }} • AI Bet Battle{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/event_detail.css' %}">
+{% endblock %}
+
+{% block content %}
 <div class="container">
 
   <div class="header">
-    <a href="{% url 'index' %}" class="back">Dashboard</a>
+    <a href="{% url 'index' %}" class="back">{% trans "Dashboard" %}</a>
   </div>
 
   <!-- MATCH CARD -->
   <div class="match-card">
 
-    <!-- HEADER -->
     <div class="match-header">
       <div class="match-type">
         {{ match.get_type_display }}
@@ -31,7 +26,6 @@
         <span style="opacity:.5;margin:0 6px">•</span>
         {{ match.metadata.fixture.venue.name }}
       </div>
-
       <div class="match-date">
         {{ match.metadata.fixture.date|convert_data }}
         <span style="opacity:.5;margin:0 6px">•</span>
@@ -41,10 +35,7 @@
 
     <!-- SCORE -->
     <div class="match-title score-title">
-      <span class="team">
-        {{ match.home }}
-      </span>
-
+      <span class="team">{{ match.home }}</span>
       <span class="score-inline">
         {% if match.score_home != None and match.score_away != None %}
           {{ match.score_home }} : {{ match.score_away }}
@@ -52,17 +43,13 @@
           – : –
         {% endif %}
       </span>
-
-      <span class="team">
-        {{ match.away }}
-      </span>
+      <span class="team">{{ match.away }}</span>
     </div>
 
     <!-- ODDS -->
     {% if odds %}
     <div class="odds-block">
-      <div class="odds-title">Match Odds</div>
-
+      <div class="odds-title">{% trans "Match Odds" %}</div>
       <div class="odds-grid">
         {% for name, value in odds.items %}
         <div class="odd-card">
@@ -77,8 +64,7 @@
     <!-- AI BETS -->
     {% if info and account_type == 'premium' or match.score_home != None %}
       <div class="bets-block">
-        <div class="bets-title">AI Bets</div>
-
+        <div class="bets-title">{% trans "AI Bets" %}</div>
         <div class="bets-list">
           {% for model, data in info.items %}
           <div class="bet-row">
@@ -91,12 +77,13 @@
         </div>
       </div>
     {% else %}
-        <div style="text-align:center; padding: 50px 0 50px 0; color: var(--text-muted); font-size: 1.1rem;">
-          🔒 Upgrade to Premium to see bets and analysis.
-          <br>
-          <br>
-          <a href="{% url 'profile' %}" class="top-btn primary" style="margin-top: 12px;">Upgrade Account</a>
-        </div>
+      <div style="text-align:center;padding:50px 0;color:var(--text-muted);font-size:1.1rem;">
+        🔒 {% trans "Upgrade to Premium to see bets and analysis." %}
+        <br><br>
+        <a href="{% url 'profile' %}" class="top-btn primary" style="margin-top:12px;">
+          {% trans "Upgrade Account" %}
+        </a>
+      </div>
     {% endif %}
 
   </div>
@@ -104,17 +91,14 @@
   <!-- COMMENTS -->
   {% if comments and account_type == 'premium' or match.score_home != None %}
   <div class="info-card">
-    <div class="info-title"><b>AI Analysis</b></div>
-
+    <div class="info-title"><b>{% trans "AI Analysis" %}</b></div>
     <div class="comments-grid">
       {% for model, comment in comments.items %}
       <div class="comment-card">
         <div class="comment-header">
           <span class="model-name">{{ model }}</span>
         </div>
-        <div class="comment-text">
-          {{ comment }}
-        </div>
+        <div class="comment-text">{{ comment }}</div>
       </div>
       {% endfor %}
     </div>
@@ -122,5 +106,4 @@
   {% endif %}
 
 </div>
-</body>
-</html>
+{% endblock %}
