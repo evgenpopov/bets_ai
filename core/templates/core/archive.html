@@ -1,0 +1,141 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Archive" %} — AI Bet Battle{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1 class="site-title">
+    {% trans "Archive" %}
+    <span class="beta-badge">pre-may</span>
+  </h1>
+  <div class="hero-line"></div>
+  <p>
+    {% blocktrans trimmed with cutoff=archive_cutoff|date:"d.m.Y" %}
+      Historical bets and model performance before {{ cutoff }}.
+      Use the filters below to explore a specific month or custom period.
+    {% endblocktrans %}
+  </p>
+</div>
+
+<div class="container">
+
+
+  <!-- ===== CHART ===== -->
+  <div class="section-title">{% trans "Balance Curves" %}</div>
+  <div id="chartContainer" data-history='{{ history_json|safe }}'>
+    <canvas id="lineChart" height="500"></canvas>
+  </div>
+  <br>
+
+  <!-- ===== MODEL STATS TABLE ===== -->
+  <div class="section-title">{% trans "Models Performance" %}</div>
+  <div class="table-wrap" style="margin-bottom:50px">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>{% trans "Model" %}</th>
+          <th>{% trans "Bets" %}</th>
+          <th>{% trans "Wins" %}</th>
+          <th>{% trans "Winrate" %}</th>
+          <th>{% trans "Start $" %}</th>
+          <th>{% trans "End $" %}</th>
+          <th>{% trans "P&L" %}</th>
+          <th>{% trans "ROI" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for s in model_stats %}
+        <tr>
+          <td style="color:var(--text-muted);font-size:.8rem">{{ forloop.counter }}</td>
+          <td><a href="{% url 'model_detail' s.slug %}">{{ s.name }}</a></td>
+          <td>{{ s.total }}</td>
+          <td class="positive">{{ s.positive }}</td>
+          <td>{{ s.winrate }}%</td>
+          <td>${{ s.start_balance|floatformat:2 }}</td>
+          <td>${{ s.end_balance|floatformat:2 }}</td>
+          <td class="{% if s.profit >= 0 %}positive{% else %}negative{% endif %}">
+            {% if s.profit >= 0 %}+{% endif %}${{ s.profit|floatformat:2 }}
+          </td>
+          <td class="{% if s.roi >= 0 %}positive{% else %}negative{% endif %}">
+            {% if s.roi >= 0 %}+{% endif %}{{ s.roi|floatformat:1 }}%
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9" style="text-align:center;color:var(--text-muted);">
+            {% trans "No data for this period" %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== BETS TABLE ===== -->
+  <div class="section-title">{% trans "All Bets" %}</div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>{% trans "Date" %}</th>
+          <th>{% trans "Model" %}</th>
+          <th>{% trans "Match" %}</th>
+          <th>{% trans "Bet" %}</th>
+          <th>{% trans "Amount" %}</th>
+          <th>{% trans "Odds" %}</th>
+          <th>{% trans "Result" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in bets_page %}
+        <tr>
+          <td>{{ p.match.date|date:"d.m.Y" }}</td>
+          <td><a href="{% url 'model_detail' p.ai_model.slug %}">{{ p.ai_model.name }}</a></td>
+          <td><a href="{% url 'event_detail' p.match.id %}">{{ p.match.home }} – {{ p.match.away }}</a></td>
+          <td>{{ p.predicted_winner }}</td>
+          <td>${{ p.bet_amount|floatformat:0 }}</td>
+          <td>{{ p.odds|floatformat:2 }}</td>
+          <td class="{% if p.result|slice:'0:1' == '-' %}negative{% else %}positive{% endif %}">
+            {% if p.result|slice:'0:1' != '-' %}+{% endif %}${{ p.result|floatformat:2 }}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="7" style="text-align:center;color:var(--text-muted);">
+            {% trans "No bets for selected filters" %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ===== PAGINATION ===== -->
+  {% if bets_page.has_other_pages %}
+  <div class="pagination">
+    {% if bets_page.has_previous %}
+      <a href="?page={{ bets_page.previous_page_number }}{% if selected_month %}&month={{ selected_month }}{% endif %}{% if date_from %}&from={{ date_from }}{% endif %}{% if date_to %}&to={{ date_to }}{% endif %}{% if model_filter %}&model={{ model_filter }}{% endif %}"
+         class="page-btn">← {% trans "Prev" %}</a>
+    {% endif %}
+
+    <span class="page-info">
+      {{ bets_page.number }} / {{ bets_page.paginator.num_pages }}
+    </span>
+
+    {% if bets_page.has_next %}
+      <a href="?page={{ bets_page.next_page_number }}{% if selected_month %}&month={{ selected_month }}{% endif %}{% if date_from %}&from={{ date_from }}{% endif %}{% if date_to %}&to={{ date_to }}{% endif %}{% if model_filter %}&model={{ model_filter }}{% endif %}"
+         class="page-btn">{% trans "Next" %} →</a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'js/main.js' %}"></script>
+{% endblock %}

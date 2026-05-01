@@ -58,6 +58,11 @@
   </div>
 
   <!-- CHART -->
+  <div style="display:flex; justify-content:flex-end; margin-bottom:10px;">
+    <a href="{% url 'archive' %}" class="top-btn">
+      📁 {% trans "Archive" %}
+    </a>
+  </div>
   <div id="chartContainer" data-history='{{ history_data|safe }}'>
     <canvas id="lineChart" height="500"></canvas>
   </div>

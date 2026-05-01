@@ -14,7 +14,8 @@ document.addEventListener('DOMContentLoaded', function() {
       borderColor:colors[i%colors.length],
       tension:.4,
       pointRadius:0,
-      borderWidth:2
+      borderWidth:2,
+      spanGaps: true
     }));
 
     const balanceLabelPlugin = {

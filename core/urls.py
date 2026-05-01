@@ -20,4 +20,6 @@ urlpatterns = [
     path('terms/', views.terms, name='terms'),
     path('refund/', views.refund, name='refund'),
     path('contacts/', views.contacts, name='contacts'),
+
+    path("archive/", views.archive, name="archive"),
 ]
